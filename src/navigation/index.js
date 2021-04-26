@@ -1,11 +1,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  HeaderBackButton,
-} from '@react-navigation/stack';
-import { BackHandler } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { colors } from '../tokens';
+import Logout from '../components/Logout';
 import Main from '../pages/Main';
 
 const Stack = createStackNavigator();
@@ -25,9 +22,7 @@ const Navigation = () => (
           name="Home"
           component={Main}
           options={{
-            headerLeft: () => (
-              <HeaderBackButton onPress={BackHandler.exitApp} />
-            ),
+            headerLeft: () => <Logout />,
             title: '',
           }}
         />

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Image } from 'react-native';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import { MapContainer, MapContent } from './style';
+import loading from '../../assets/loading.gif';
 
 const mapStyle = {
   map: {
@@ -29,6 +31,7 @@ const mapStyle = {
 };
 
 const Map = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useState({
     latitude: -8.0548874,
     longitude: -34.8885838,
@@ -42,28 +45,36 @@ const Map = () => {
     } else {
       const position = await Location.getCurrentPositionAsync({});
       setLocation(position.coords);
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     getLocation();
+    setInterval(() => {
+      getLocation();
+    }, 4000);
   }, []);
 
   return (
     <>
       <MapContainer>
         <MapContent>
-          <MapView
-            style={mapStyle.map}
-            customMapStyle={mapStyle.mapConfig}
-            region={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-              latitudeDelta: 0.03,
-              longitudeDelta: 0.03,
-            }}
-            showsUserLocation
-          />
+          {isLoading ? (
+            <Image source={loading} />
+          ) : (
+            <MapView
+              style={mapStyle.map}
+              customMapStyle={mapStyle.mapConfig}
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.03,
+                longitudeDelta: 0.03,
+              }}
+              showsUserLocation
+            />
+          )}
         </MapContent>
       </MapContainer>
     </>

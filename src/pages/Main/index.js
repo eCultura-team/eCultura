@@ -1,12 +1,16 @@
 import React from 'react';
-import { MainContent } from './style';
-import Hello from '../../components/Hello/index';
+import { ScrollView } from 'react-native';
+import Welcome from '../../components/Welcome';
+import Map from '../../components/Map';
+import CategoryMenu from '../../components/CategoryMenu';
 
 const Main = () => (
   <>
-    <MainContent>
-      <Hello />
-    </MainContent>
+    <ScrollView>
+      <Welcome />
+      <Map />
+      <CategoryMenu />
+    </ScrollView>
   </>
 );
 

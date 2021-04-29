@@ -31,6 +31,7 @@
     "jsx-a11y/label-has-associated-control": "off",
     "no-console": "off",
     "react/style-prop-object": "off",
-    "no-alert": "off"
+    "no-alert": "off",
+    "no-underscore-dangle": "off"
   }
 }

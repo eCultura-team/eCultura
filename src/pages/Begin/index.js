@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, AsyncStorage } from 'react-native';
+import { useStore } from '../../providers/store';
 import * as S from './style';
 import logo from '../../assets/logo.png';
 import BeginBackground from '../../assets/BeginBackground.png';
 
 const Begin = ({ navigation }) => {
-  const [userName, setUserName] = useState('');
+  const { userName, setUserName } = useStore();
 
   const saveName = async () => {
     try {
-      if (userName.length === 0) {
+      if (userName === null) {
         alert('Ops, parece que você esqueceu de digitar seu nome.😕');
       } else {
         await AsyncStorage.setItem('1', userName);

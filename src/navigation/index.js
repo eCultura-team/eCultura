@@ -3,6 +3,7 @@ import { AsyncStorage } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { colors } from '../tokens';
+import { useStore } from '../providers/store';
 import Logout from '../components/Logout';
 import Main from '../pages/Main';
 import Begin from '../pages/Begin';
@@ -17,7 +18,7 @@ const NavigationStyle = {
 };
 
 const Navigation = () => {
-  const [userName, setUserName] = useState('');
+  const { userName, setUserName } = useStore();
   const [isLoading, setIsLoading] = useState(true);
 
   async function isStored() {

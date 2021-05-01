@@ -49,6 +49,8 @@ export const BeginName = styled.View`
   display: flex;
   left: 40px;
   width: 310px;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const BeginNameInput = styled.TextInput`
@@ -57,4 +59,5 @@ export const BeginNameInput = styled.TextInput`
   margin-top: 124px;
   padding: 15px;
   width: 100%;
+  margin-bottom: 18px;
 `;

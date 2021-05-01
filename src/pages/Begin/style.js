@@ -13,7 +13,7 @@ export const BeginHeader = styled.View`
 export const BeginHeaderBackground = styled.Image`
   position: absolute;
   right: 0;
-  top: 40px;
+  top: 36px;
 `;
 
 export const BeginHeaderLogo = styled.Image`
@@ -60,4 +60,6 @@ export const BeginNameInput = styled.TextInput`
   padding: 15px;
   width: 100%;
   margin-bottom: 18px;
+  color: ${colors.gray};
+  font-weight: 400;
 `;

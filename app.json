@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "ecultura",
+    "name": "eCultura",
     "slug": "ecultura",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "./src/assets/iconApp.png",
     "splash": {
-      "image": "./src/assets/splash.png",
+      "image": "./src/assets/splashScreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

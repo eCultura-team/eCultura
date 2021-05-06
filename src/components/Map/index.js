@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import { useStore } from '../../providers/store';
 import { MapContainer, MapContent } from './style';
 import loading from '../../assets/loading.gif';
 import theatreAPI from '../../services/RecAPI/theatre';
@@ -39,9 +40,9 @@ const Map = () => {
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
-  const [museumResults, setMuseumResults] = useState([]);
-  const [theatreResults, setTheatreResults] = useState([]);
-  const [marketResults, setMarketResults] = useState([]);
+  const { museumResults, setMuseumResults } = useStore();
+  const { theatreResults, setTheatreResults } = useStore();
+  const { marketResults, setMarketResults } = useStore();
 
   const theaterMapMarkers = () =>
     theatreResults.map((theatre) => (

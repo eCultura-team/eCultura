@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text } from 'react-native';
+import { FlatList } from 'react-native';
 import CategoryTitle from '../../components/CategoryTitle';
+import CategoryItem from '../../components/CategoryItem';
 import { useStore } from '../../providers/store';
 
 const CategoryList = ({ route }) => {
@@ -31,9 +32,15 @@ const CategoryList = ({ route }) => {
     <>
       <CategoryTitle>{route.params.title}</CategoryTitle>
       <FlatList
+        style={{
+          marginTop: 41,
+        }}
+        contentContainerStyle={{
+          alignSelf: 'center',
+        }}
         data={currentCategory}
         keyExtractor={(item) => item.nome}
-        renderItem={({ item }) => <Text>{item.nome}</Text>}
+        renderItem={({ item }) => <CategoryItem title={item.nome} />}
       />
     </>
   );

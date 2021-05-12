@@ -3,7 +3,7 @@ import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useStore } from '../../providers/store';
-import { MapContainer, MapContent, ButtonTeste } from './style';
+import { MapContainer, MapContent, ButtonMyLocation } from './style';
 import loading from '../../assets/loading.gif';
 import currentlocation from '../../assets/currentlocation.png';
 import theatreAPI from '../../services/RecAPI/theatre';
@@ -181,12 +181,12 @@ const Map = () => {
                 {marketMapMarkers()}
                 {museumMapMarkers()}
               </MapView>
-              <ButtonTeste
+              <ButtonMyLocation
                 onPress={() => centralizeCamera()}
                 underlayColor={colors.darkGreen}
               >
                 <Image source={currentlocation} />
-              </ButtonTeste>
+              </ButtonMyLocation>
             </>
           )}
         </MapContent>

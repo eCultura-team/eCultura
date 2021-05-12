@@ -19,7 +19,7 @@ export const MapContent = styled.View`
   position: relative;
 `;
 
-export const ButtonTeste = styled.TouchableHighlight`
+export const ButtonMyLocation = styled.TouchableHighlight`
   position: absolute;
   background: white;
   color: red;

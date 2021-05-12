@@ -7,6 +7,7 @@ const Store = ({ children }) => {
   const [museumResults, setMuseumResults] = useState([]);
   const [theatreResults, setTheatreResults] = useState([]);
   const [marketResults, setMarketResults] = useState([]);
+  const [userLocation, setUserLocation] = useState({});
 
   return (
     <>
@@ -20,6 +21,8 @@ const Store = ({ children }) => {
           setTheatreResults,
           marketResults,
           setMarketResults,
+          userLocation,
+          setUserLocation,
         }}
       >
         {children}

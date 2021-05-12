@@ -13,12 +13,15 @@ const CategoryList = ({ route }) => {
   const refInput = useRef(null);
 
   const getCurrentCategory = (title) => {
+    const teatro = 'Teatro';
+    const museu = 'Museu';
+
     switch (title) {
-      case 'Teatro':
+      case teatro:
         setCurrentCategory(theatreResults);
         break;
 
-      case 'Museu':
+      case museu:
         setCurrentCategory(museumResults);
         break;
 

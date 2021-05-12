@@ -10,10 +10,6 @@ import museumAPI from '../../services/RecAPI/museum';
 import marketAPI from '../../services/RecAPI/market';
 
 const mapStyle = {
-  map: {
-    width: '100%',
-    height: '100%',
-  },
   mapConfig: [
     {
       featureType: 'poi',
@@ -36,13 +32,18 @@ const mapStyle = {
 
 const Map = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useState({
+  const initialLocation = {
+    latitude: -8.0585076,
+    longitude: -34.8793304,
+  };
+  const { setUserLocation } = useStore({
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
   const { museumResults, setMuseumResults } = useStore();
   const { theatreResults, setTheatreResults } = useStore();
   const { marketResults, setMarketResults } = useStore();
+  const [mapReady, setMapReady] = useState({});
 
   const theaterMapMarkers = () =>
     theatreResults.map((theatre) => (
@@ -90,7 +91,7 @@ const Map = () => {
       alert('A permissão de localização foi negada, por favor habilite-a.');
     } else {
       const position = await Location.getCurrentPositionAsync({});
-      setLocation(position.coords);
+      setUserLocation(position.coords);
       setIsLoading(false);
     }
   };
@@ -147,15 +148,19 @@ const Map = () => {
           ) : (
             <>
               <MapView
-                style={mapStyle.map}
+                style={mapReady}
                 customMapStyle={mapStyle.mapConfig}
                 initialRegion={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
+                  latitude: initialLocation.latitude,
+                  longitude: initialLocation.longitude,
                   latitudeDelta: 0.03,
                   longitudeDelta: 0.03,
                 }}
                 showsUserLocation
+                showsMyLocationButton
+                onMapReady={() =>
+                  setMapReady({ width: '100%', height: '100%' })
+                }
               >
                 {theaterMapMarkers()}
                 {marketMapMarkers()}

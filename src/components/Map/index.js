@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useStore } from '../../providers/store';
-import { MapContainer, MapContent } from './style';
+import { MapContainer, MapContent, ButtonTeste } from './style';
 import loading from '../../assets/loading.gif';
+import currentlocation from '../../assets/currentlocation.png';
 import theatreAPI from '../../services/RecAPI/theatre';
 import museumAPI from '../../services/RecAPI/museum';
 import marketAPI from '../../services/RecAPI/market';
+import { colors } from '../../tokens';
 
 const mapStyle = {
+  map: {
+    width: '100%',
+    height: '100%',
+  },
   mapConfig: [
     {
       featureType: 'poi',
@@ -36,14 +42,14 @@ const Map = () => {
     latitude: -8.0585076,
     longitude: -34.8793304,
   };
-  const { setUserLocation } = useStore({
+  const { userLocation, setUserLocation } = useStore({
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
   const { museumResults, setMuseumResults } = useStore();
   const { theatreResults, setTheatreResults } = useStore();
   const { marketResults, setMarketResults } = useStore();
-  const [mapReady, setMapReady] = useState({});
+  const mapRef = useRef(null);
 
   const theaterMapMarkers = () =>
     theatreResults.map((theatre) => (
@@ -130,6 +136,18 @@ const Map = () => {
     }
   };
 
+  const centralizeCamera = () => {
+    const newCamera = {
+      center: {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+      },
+      zoom: 15,
+    };
+
+    mapRef.current.animateCamera(newCamera, { duration: 1000 });
+  };
+
   useEffect(() => {
     getLocation();
     getPlaces();
@@ -148,7 +166,8 @@ const Map = () => {
           ) : (
             <>
               <MapView
-                style={mapReady}
+                ref={mapRef}
+                style={mapStyle.map}
                 customMapStyle={mapStyle.mapConfig}
                 initialRegion={{
                   latitude: initialLocation.latitude,
@@ -157,15 +176,17 @@ const Map = () => {
                   longitudeDelta: 0.03,
                 }}
                 showsUserLocation
-                showsMyLocationButton
-                onMapReady={() =>
-                  setMapReady({ width: '100%', height: '100%' })
-                }
               >
                 {theaterMapMarkers()}
                 {marketMapMarkers()}
                 {museumMapMarkers()}
               </MapView>
+              <ButtonTeste
+                onPress={() => centralizeCamera()}
+                underlayColor={colors.darkGreen}
+              >
+                <Image source={currentlocation} />
+              </ButtonTeste>
             </>
           )}
         </MapContent>

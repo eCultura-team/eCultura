@@ -4,12 +4,12 @@ import Welcome from '../../components/Welcome';
 import Map from '../../components/Map';
 import CategoryMenu from '../../components/CategoryMenu';
 
-const Main = () => (
+const Main = ({ navigation }) => (
   <>
     <ScrollView>
       <Welcome />
       <Map />
-      <CategoryMenu />
+      <CategoryMenu navigation={navigation} />
     </ScrollView>
   </>
 );

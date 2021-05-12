@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { MapContainer, MapContent } from './style';
+import { useStore } from '../../providers/store';
+import { MapContainer, MapContent, ButtonMyLocation } from './style';
 import loading from '../../assets/loading.gif';
+import currentlocation from '../../assets/currentlocation.png';
 import theatreAPI from '../../services/RecAPI/theatre';
 import museumAPI from '../../services/RecAPI/museum';
 import marketAPI from '../../services/RecAPI/market';
+import { colors } from '../../tokens';
 
 const mapStyle = {
   map: {
@@ -35,13 +38,18 @@ const mapStyle = {
 
 const Map = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useState({
+  const initialLocation = {
+    latitude: -8.0585076,
+    longitude: -34.8793304,
+  };
+  const { userLocation, setUserLocation } = useStore({
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
-  const [museumResults, setMuseumResults] = useState([]);
-  const [theatreResults, setTheatreResults] = useState([]);
-  const [marketResults, setMarketResults] = useState([]);
+  const { museumResults, setMuseumResults } = useStore();
+  const { theatreResults, setTheatreResults } = useStore();
+  const { marketResults, setMarketResults } = useStore();
+  const mapRef = useRef(null);
 
   const theaterMapMarkers = () =>
     theatreResults.map((theatre) => (
@@ -89,7 +97,7 @@ const Map = () => {
       alert('A permissão de localização foi negada, por favor habilite-a.');
     } else {
       const position = await Location.getCurrentPositionAsync({});
-      setLocation(position.coords);
+      setUserLocation(position.coords);
       setIsLoading(false);
     }
   };
@@ -128,6 +136,18 @@ const Map = () => {
     }
   };
 
+  const centralizeCamera = () => {
+    const newCamera = {
+      center: {
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+      },
+      zoom: 15,
+    };
+
+    mapRef.current.animateCamera(newCamera, { duration: 1000 });
+  };
+
   useEffect(() => {
     getLocation();
     getPlaces();
@@ -146,11 +166,12 @@ const Map = () => {
           ) : (
             <>
               <MapView
+                ref={mapRef}
                 style={mapStyle.map}
                 customMapStyle={mapStyle.mapConfig}
                 initialRegion={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
+                  latitude: initialLocation.latitude,
+                  longitude: initialLocation.longitude,
                   latitudeDelta: 0.03,
                   longitudeDelta: 0.03,
                 }}
@@ -160,6 +181,12 @@ const Map = () => {
                 {marketMapMarkers()}
                 {museumMapMarkers()}
               </MapView>
+              <ButtonMyLocation
+                onPress={() => centralizeCamera()}
+                underlayColor={colors.darkGreen}
+              >
+                <Image source={currentlocation} />
+              </ButtonMyLocation>
             </>
           )}
         </MapContent>

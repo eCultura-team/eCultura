@@ -16,4 +16,19 @@ export const MapContent = styled.View`
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+`;
+
+export const ButtonMyLocation = styled.TouchableHighlight`
+  position: absolute;
+  background: white;
+  color: red;
+  top: 430px;
+  right: 10px;
+  border-radius: 40px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

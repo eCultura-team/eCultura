@@ -6,12 +6,14 @@ import theater from '../../assets/theater.png';
 import market from '../../assets/market.png';
 import museum from '../../assets/museum.png';
 
-const CategoryMenu = () => (
+const CategoryMenu = ({ navigation }) => (
   <>
     <S.MenuContainer>
       <S.MenuBox>
         <S.MenuBoxButton
-          onPress={() => console.log('Teatro')}
+          onPress={() =>
+            navigation.navigate('CategoryList', { title: 'Teatro' })
+          }
           underlayColor={colors.primary}
         >
           <S.MenuBoxButtonContent>
@@ -22,7 +24,9 @@ const CategoryMenu = () => (
       </S.MenuBox>
       <S.MenuBox>
         <S.MenuBoxButton
-          onPress={() => console.log('Museu')}
+          onPress={() =>
+            navigation.navigate('CategoryList', { title: 'Museu' })
+          }
           underlayColor={colors.primary}
         >
           <S.MenuBoxButtonContent>
@@ -33,7 +37,9 @@ const CategoryMenu = () => (
       </S.MenuBox>
       <S.MenuBox>
         <S.MenuBoxButton
-          onPress={() => console.log('Mercado Público')}
+          onPress={() =>
+            navigation.navigate('CategoryList', { title: 'Mercado Público' })
+          }
           underlayColor={colors.primary}
         >
           <S.MenuBoxButtonContent>

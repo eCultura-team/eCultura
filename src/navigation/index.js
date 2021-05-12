@@ -7,6 +7,7 @@ import { useStore } from '../providers/store';
 import Logout from '../components/Logout';
 import Main from '../pages/Main';
 import Begin from '../pages/Begin';
+import CategoryList from '../pages/CategoryList';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ const NavigationStyle = {
     elevation: 0,
     backgroundColor: colors.backgroundPage,
   },
+  headerTintColor: colors.primary,
 };
 
 const Navigation = () => {
@@ -55,6 +57,13 @@ const Navigation = () => {
               component={Main}
               options={{
                 headerLeft: () => <Logout />,
+                title: '',
+              }}
+            />
+            <Stack.Screen
+              name="CategoryList"
+              component={CategoryList}
+              options={{
                 title: '',
               }}
             />

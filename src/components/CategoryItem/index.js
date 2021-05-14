@@ -4,7 +4,7 @@ import * as S from './style';
 import Arrow from '../../assets/arrow.png';
 import { colors } from '../../tokens';
 
-const CategoryItem = ({ title }) => {
+const CategoryItem = ({ title, navigation, info }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   return (
@@ -12,7 +12,7 @@ const CategoryItem = ({ title }) => {
       <S.ItemContent
         onPressIn={() => setIsPressed(!isPressed)}
         onPressOut={() => setIsPressed(!isPressed)}
-        onPress={() => console.log(title)}
+        onPress={() => navigation.navigate('Portfolio', { info, title })}
         underlayColor={colors.primary}
       >
         <S.InfoContent>

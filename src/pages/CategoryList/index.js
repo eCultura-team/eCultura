@@ -6,7 +6,7 @@ import { useStore } from '../../providers/store';
 import * as S from './style';
 import search from '../../assets/search.png';
 
-const CategoryList = ({ route }) => {
+const CategoryList = ({ route, navigation }) => {
   const { museumResults, theatreResults, marketResults } = useStore();
   const [currentCategory, setCurrentCategory] = useState([]);
   const [inputText, setInputText] = useState([]);
@@ -80,7 +80,17 @@ const CategoryList = ({ route }) => {
               : filterPlaces(currentCategory)
           }
           keyExtractor={(item) => item.nome}
-          renderItem={({ item }) => <CategoryItem title={item.nome} />}
+          renderItem={({ item }) => (
+            <CategoryItem
+              title={item.nome}
+              info={{
+                description: item.descricao,
+                phone: item.telefone,
+                site: item.site,
+              }}
+              navigation={navigation}
+            />
+          )}
         />
       )}
     </>

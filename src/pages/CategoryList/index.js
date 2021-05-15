@@ -82,10 +82,12 @@ const CategoryList = ({ route, navigation }) => {
           keyExtractor={(item) => item.nome}
           renderItem={({ item }) => (
             <CategoryItem
-              title={item.nome}
-              info={{
+              infoREC={{
+                title: item.nome,
                 description: item.descricao,
-                phone: item.telefone,
+                addressDistrict: item.bairro,
+                addressStreet: item.logradouro,
+                phone: `${item.telefone || item.Telefone}`,
                 site: item.site,
               }}
               navigation={navigation}

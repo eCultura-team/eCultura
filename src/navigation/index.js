@@ -7,6 +7,7 @@ import { useStore } from '../providers/store';
 import Logout from '../components/Logout';
 import Main from '../pages/Main';
 import Begin from '../pages/Begin';
+import Portfolio from '../pages/Portfolio';
 import CategoryList from '../pages/CategoryList';
 
 const Stack = createStackNavigator();
@@ -63,6 +64,13 @@ const Navigation = () => {
             <Stack.Screen
               name="CategoryList"
               component={CategoryList}
+              options={{
+                title: '',
+              }}
+            />
+            <Stack.Screen
+              name="Portfolio"
+              component={Portfolio}
               options={{
                 title: '',
               }}

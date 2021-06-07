@@ -5,8 +5,8 @@
   - Node.js;
   - EXPO-CLI
 
-### **Para instalar basta executar o seguinte comando na sua máquina: **
+### **Para instalar basta executar o seguinte comando na sua máquina:** <h3>
   - Yarn install ou NPM install
 
-# **Agora é só rodar a aplicação!**
+### **Agora é só rodar a aplicação!** <h3>
    - Yarn start ou NPM start

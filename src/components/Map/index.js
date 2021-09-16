@@ -96,7 +96,9 @@ const Map = () => {
     if (status !== 'granted') {
       alert('A permissão de localização foi negada, por favor habilite-a.');
     } else {
-      const position = await Location.getCurrentPositionAsync({});
+      const position = await Location.getLastKnownPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
       setUserLocation(position.coords);
       setIsLoading(false);
     }
@@ -175,6 +177,8 @@ const Map = () => {
                   latitudeDelta: 0.03,
                   longitudeDelta: 0.03,
                 }}
+                showsMyLocationButton={false}
+                toolbarEnabled={false}
                 showsUserLocation
               >
                 {theaterMapMarkers()}

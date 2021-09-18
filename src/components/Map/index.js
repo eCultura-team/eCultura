@@ -90,18 +90,31 @@ const Map = () => {
       />
     ));
 
-  const getLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
+  const getLocation = () => {
+    Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest })
+      .then((data) => {
+        setUserLocation(data.coords);
+      })
+      .catch(() => '');
+  };
 
-    if (status !== 'granted') {
-      alert('A permissão de localização foi negada, por favor habilite-a.');
-    } else {
-      const position = await Location.getLastKnownPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-      setUserLocation(position.coords);
-      setIsLoading(false);
-    }
+  const getPermission = () => {
+    Location.requestForegroundPermissionsAsync()
+      .then((data) => {
+        if (data.status !== 'granted')
+          return alert(
+            'A permissão de localização foi negada, por favor a permita.',
+          );
+
+        getLocation();
+      })
+      .catch(() =>
+        alert(
+          'Houve um erro inesperado ao tentar pedir permissão de localização, por favor tente novamente depois :D',
+        ),
+      );
+
+    setIsLoading(false);
   };
 
   const getTheatre = async () => {
@@ -139,6 +152,7 @@ const Map = () => {
   };
 
   const centralizeCamera = () => {
+    getPermission();
     const newCamera = {
       center: {
         latitude: userLocation.latitude,
@@ -151,12 +165,12 @@ const Map = () => {
   };
 
   useEffect(() => {
-    getLocation();
+    getPermission();
     getPlaces();
 
     setInterval(() => {
       getLocation();
-    }, 4000);
+    }, 1000);
   }, []);
 
   return (

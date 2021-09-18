@@ -32,6 +32,7 @@
     "no-console": "off",
     "react/style-prop-object": "off",
     "no-alert": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "consistent-return": "off"
   }
 }

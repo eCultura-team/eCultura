@@ -89,6 +89,10 @@ const CategoryList = ({ route, navigation }) => {
                 addressStreet: item.logradouro,
                 phone: `${item.telefone || item.Telefone}`,
                 site: item.site,
+                location: {
+                  latitude: item.latitude,
+                  longitude: item.longitude,
+                },
               }}
               navigation={navigation}
             />

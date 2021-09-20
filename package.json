@@ -20,6 +20,7 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-gesture-handler": "~1.10.2",
+    "react-native-map-link": "^2.8.0",
     "react-native-maps": "0.28.0",
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
@@ -57,5 +58,16 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
-  }
+  },
+  "ios": {
+    "infoPlist" : {
+       "LSApplicationQueriesSchemes" : [
+          "comgooglemaps" ,
+          "citymapper" ,
+          "uber" ,
+          "lyft" ,
+          "waze"
+       ]
+    }
+ }
 }

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AsyncStorage, TouchableHighlight } from 'react-native';
-import Logo from '../../assets/logo.png';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import LogoBig from '../../assets/logoBig.png';
 import Back from '../../assets/Back.png';
-import invited from '../../assets/invited.png';
+import Invited from '../../assets/invited.png';
 
 import fire from '../../services/fire';
 import { useStore } from '../../providers/store';
@@ -21,68 +23,120 @@ import {
 } from './styles';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import Loading from '../../components/Loading';
 
 const Login = ({ navigation }) => {
-  const { accessToken, setAccessToken } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const { setAccessToken } = useStore();
+  const [initialInfo] = useState({
+    email: '',
+    password: '',
+  });
+  const [validationSchema] = useState(
+    Yup.object().shape({
+      email: Yup.string().email('E-mail inválido').required('E-mail requerido'),
+      password: Yup.string().required('Senha obrigatória'),
+    }),
+  );
 
-  const SignIn = async () => {
+  const SignIn = async (values) => {
+    setIsLoading(true);
+
     try {
-      const result = await fire.auth().signInWithEmailAndPassword('', '');
+      const result = await fire
+        .auth()
+        .signInWithEmailAndPassword(values.email, values.password);
+      console.log(result);
 
       if (result) {
-        setAccessToken(result.user.toJSON().stsTokenManager.accessToken);
-        await AsyncStorage.setItem('token', accessToken);
+        const token = result.user.toJSON().stsTokenManager.accessToken;
+        setAccessToken(token);
+        await AsyncStorage.setItem('token', token);
 
         const userName = await AsyncStorage.getItem('userName');
 
         if (userName !== null) {
+          setIsLoading(false);
           navigation.navigate('Home');
         } else {
+          setIsLoading(false);
           navigation.navigate('Begin');
         }
       }
     } catch (error) {
+      console.log(error);
       alert('E-mail ou senha inválidos');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Container>
-      <LogoContent>
-        <LogoImage source={Logo} />
-      </LogoContent>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <LogoContent>
+            <LogoImage source={LogoBig} />
+          </LogoContent>
 
-      <RegisterContent>
-        <SeparatorText>Ainda não possui uma conta?</SeparatorText>
-        <TouchableHighlight
-          onPress={() => console.log('Resgistrar-se')}
-          underlayColor="transparent"
-        >
-          <LinkText>Registrar-se</LinkText>
-        </TouchableHighlight>
-      </RegisterContent>
+          <RegisterContent>
+            <SeparatorText>Ainda não possui uma conta?</SeparatorText>
+            <TouchableHighlight
+              onPress={() => console.log('Resgistrar-se')}
+              underlayColor="transparent"
+            >
+              <LinkText>Registrar-se</LinkText>
+            </TouchableHighlight>
+          </RegisterContent>
 
-      <Form>
-        <Input placeholder="E-mail" />
-        <Input placeholder="Senha" password />
-        <Button icon={Back} handle={SignIn}>
-          Entrar
-        </Button>
-        <LinkContent
-          onPress={() => console.log('Esqueci minha senha')}
-          underlayColor="transparent"
-        >
-          <LinkText>Esqueci minha senha</LinkText>
-        </LinkContent>
-      </Form>
+          <Formik
+            initialValues={initialInfo}
+            onSubmit={(values) => SignIn(values)}
+            validationSchema={validationSchema}
+          >
+            {({ handleSubmit, handleChange, errors, touched }) => (
+              <Form onSubmit={handleSubmit}>
+                <Input
+                  name="email"
+                  placeholder="E-mail"
+                  handleChange={handleChange('email')}
+                  helpText={errors.email && touched.email && errors.email}
+                />
+                <Input
+                  name="password"
+                  placeholder="Senha"
+                  handleChange={handleChange('password')}
+                  helpText={
+                    errors.password && touched.password && errors.password
+                  }
+                  password
+                />
 
-      <OptionText>Ou</OptionText>
+                <Button icon={Back} handle={handleSubmit}>
+                  Entrar
+                </Button>
 
-      <InvitedContent>
-        <Button icon={invited} handle={() => navigation.navigate('Begin')}>
-          Entrar como convidado
-        </Button>
-      </InvitedContent>
+                <LinkContent
+                  onPress={() => console.log('Resgistrar-se')}
+                  underlayColor="transparent"
+                >
+                  <LinkText>Esqueci minha senha</LinkText>
+                </LinkContent>
+              </Form>
+            )}
+          </Formik>
+
+          <OptionText>Ou</OptionText>
+
+          <InvitedContent>
+            <Button icon={Invited} handle={() => navigation.navigate('Begin')}>
+              Entrar como convidado
+            </Button>
+          </InvitedContent>
+        </>
+      )}
     </Container>
   );
 };

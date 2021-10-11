@@ -7,7 +7,9 @@ export const Content = styled.View`
   align-items: center;
   width: 80%;
   height: 60px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  border: 2px solid ${({ error }) => (error ? 'red' : colors.white)};
+  border-radius: 8px;
 `;
 
 export const InputText = styled.TextInput`
@@ -39,4 +41,10 @@ export const SeePassword = styled.TouchableHighlight`
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+`;
+
+export const HelpText = styled.Text`
+  color: red;
+  width: 100%;
+  margin-top: 6px;
 `;

@@ -25,7 +25,7 @@ export const Form = styled.View`
   align-items: center;
   display: flex;
   width: 100%;
-  height: 300px;
+  height: 310px;
   justify-content: center;
 `;
 
@@ -45,7 +45,7 @@ export const LogoImage = styled.Image`
 `;
 
 export const LinkContent = styled.TouchableHighlight`
-  padding: 20px 0;
+  padding-top: 16px;
 `;
 
 export const LinkText = styled.Text`

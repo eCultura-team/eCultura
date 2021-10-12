@@ -4,20 +4,17 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import LogoBig from '../../assets/logoBig.png';
 import Back from '../../assets/Back.png';
-import Invited from '../../assets/invited.png';
 
 import fire from '../../services/fire';
 import { useStore } from '../../providers/store';
+import api from '../../services/api';
 
 import {
   Container,
   Form,
   LogoImage,
   LogoContent,
-  LinkContent,
   LinkText,
-  InvitedContent,
-  OptionText,
   RegisterContent,
   SeparatorText,
 } from './styles';
@@ -31,40 +28,43 @@ const Login = ({ navigation }) => {
   const [initialInfo] = useState({
     email: '',
     password: '',
+    passwordConfirm: '',
   });
   const [validationSchema] = useState(
     Yup.object().shape({
-      email: Yup.string().email('E-mail inválido').required('E-mail requerido'),
-      password: Yup.string().required('Senha obrigatória'),
+      email: Yup.string()
+        .email('O e-mail informado é inválido')
+        .required('O e-mail é obrigatório'),
+      password: Yup.string().required('A senha é obrigatória'),
+      passwordConfirm: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'As senhas precisam ser iguais')
+        .required('A confirmação de senha é obrigatória'),
     }),
   );
 
-  const SignIn = async (values) => {
+  const createUser = async (values) => {
     setIsLoading(true);
 
     try {
-      const result = await fire
-        .auth()
-        .signInWithEmailAndPassword(values.email, values.password);
+      const { data } = await api.post('/createUser', {
+        email: values.email,
+        password: values.password,
+      });
 
-      if (result) {
+      if (data.status === 201) {
+        const result = await fire
+          .auth()
+          .signInWithEmailAndPassword(values.email, values.password);
+
         const token = result.user.toJSON().stsTokenManager.accessToken;
         setAccessToken(token);
         await AsyncStorage.setItem('token', token);
 
-        const userName = await AsyncStorage.getItem('userName');
-
-        if (userName !== null) {
-          setIsLoading(false);
-          navigation.navigate('Home');
-        } else {
-          setIsLoading(false);
-          navigation.navigate('Begin');
-        }
+        navigation.navigate('Begin');
       }
     } catch (error) {
       console.log(error);
-      alert('E-mail ou senha inválidos');
+      alert(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -81,18 +81,18 @@ const Login = ({ navigation }) => {
           </LogoContent>
 
           <RegisterContent>
-            <SeparatorText>Ainda não possui uma conta?</SeparatorText>
+            <SeparatorText>Já possui uma conta?</SeparatorText>
             <TouchableHighlight
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Login')}
               underlayColor="transparent"
             >
-              <LinkText>Registrar-se</LinkText>
+              <LinkText>Login</LinkText>
             </TouchableHighlight>
           </RegisterContent>
 
           <Formik
             initialValues={initialInfo}
-            onSubmit={(values) => SignIn(values)}
+            onSubmit={(values) => createUser(values)}
             validationSchema={validationSchema}
           >
             {({ handleSubmit, handleChange, errors, touched }) => (
@@ -112,28 +112,24 @@ const Login = ({ navigation }) => {
                   }
                   password
                 />
+                <Input
+                  name="passwordConfirm"
+                  placeholder="Confirmação de senha"
+                  handleChange={handleChange('passwordConfirm')}
+                  helpText={
+                    errors.passwordConfirm &&
+                    touched.passwordConfirm &&
+                    errors.passwordConfirm
+                  }
+                  password
+                />
 
                 <Button icon={Back} handle={handleSubmit}>
-                  Entrar
+                  Registrar
                 </Button>
-
-                <LinkContent
-                  onPress={() => console.log('Resgistrar-se')}
-                  underlayColor="transparent"
-                >
-                  <LinkText>Esqueci minha senha</LinkText>
-                </LinkContent>
               </Form>
             )}
           </Formik>
-
-          <OptionText>Ou</OptionText>
-
-          <InvitedContent>
-            <Button icon={Invited} handle={() => navigation.navigate('Begin')}>
-              Entrar como convidado
-            </Button>
-          </InvitedContent>
         </>
       )}
     </Container>

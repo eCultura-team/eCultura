@@ -13,6 +13,7 @@ import Begin from '../pages/Begin';
 import Portfolio from '../pages/Portfolio';
 import CategoryList from '../pages/CategoryList';
 import Login from '../pages/Login';
+import RegisterContent from '../pages/Register';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,13 @@ const Navigation = () => {
             }
             screenOptions={NavigationStyle}
           >
+            <Stack.Screen
+              name="Register"
+              component={RegisterContent}
+              options={{
+                headerShown: false,
+              }}
+            />
             <Stack.Screen
               name="Login"
               component={Login}

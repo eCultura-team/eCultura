@@ -24,6 +24,7 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Loading from '../../components/Loading';
+import { message } from '../../utils/error/constants';
 
 const Login = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +47,7 @@ const Login = ({ navigation }) => {
       const result = await fire
         .auth()
         .signInWithEmailAndPassword(values.email, values.password);
-
+      console.log(result);
       if (result) {
         const token = result.user.toJSON().stsTokenManager.accessToken;
         setAccessToken(token);
@@ -64,7 +65,7 @@ const Login = ({ navigation }) => {
       }
     } catch (error) {
       console.log(error);
-      alert('E-mail ou senha inválidos');
+      alert(message.FIREBASE_AUTH_INVALID_EMAIL_PASSWORD);
     } finally {
       setIsLoading(false);
     }

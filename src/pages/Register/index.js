@@ -8,6 +8,7 @@ import Back from '../../assets/Back.png';
 import fire from '../../services/fire';
 import { useStore } from '../../providers/store';
 import api from '../../services/api';
+import { error, message } from '../../utils/error/constants';
 
 import {
   Container,
@@ -61,10 +62,22 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem('token', token);
 
         navigation.navigate('Begin');
+      } else {
+        switch (data.code) {
+          case error.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS:
+            alert(message.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS);
+            break;
+
+          case error.FIREBASE_AUTH_INVALID_PASSWORD:
+            alert(message.FIREBASE_AUTH_INVALID_PASSWORD);
+            break;
+
+          default:
+            break;
+        }
       }
-    } catch (error) {
-      console.log(error);
-      alert(error.message);
+    } catch (e) {
+      alert(message.FIREBASE_SERVER_ERROR);
     } finally {
       setIsLoading(false);
     }

@@ -47,7 +47,7 @@ const Login = ({ navigation }) => {
       const result = await fire
         .auth()
         .signInWithEmailAndPassword(values.email, values.password);
-      console.log(result);
+
       if (result) {
         const token = result.user.toJSON().stsTokenManager.accessToken;
         setAccessToken(token);

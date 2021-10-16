@@ -14,6 +14,7 @@ import Portfolio from '../pages/Portfolio';
 import CategoryList from '../pages/CategoryList';
 import Login from '../pages/Login';
 import RegisterContent from '../pages/Register';
+import Settings from '../pages/Settings';
 
 const Stack = createStackNavigator();
 
@@ -57,7 +58,7 @@ const Navigation = () => {
                 ? 'Login'
                 : accessToken === null && userName !== null
                 ? 'Home'
-                : 'Begin'
+                : 'Home'
             }
             screenOptions={NavigationStyle}
           >
@@ -87,6 +88,13 @@ const Navigation = () => {
               component={Main}
               options={{
                 headerLeft: () => <Logout />,
+                title: '',
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={Settings}
+              options={{
                 title: '',
               }}
             />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FlatList, Image } from 'react-native';
-import CategoryTitle from '../../components/CategoryTitle';
+import Title from '../../components/Title';
 import CategoryItem from '../../components/CategoryItem';
 import { useStore } from '../../providers/store';
 import * as S from './style';
@@ -44,7 +44,7 @@ const CategoryList = ({ route, navigation }) => {
 
   return (
     <>
-      <CategoryTitle>{route.params.title}</CategoryTitle>
+      <Title>{route.params.title}</Title>
       <S.CategoryListContainer>
         <S.CategorySearch>
           <S.CategorySearchInput

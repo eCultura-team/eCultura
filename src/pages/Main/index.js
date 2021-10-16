@@ -1,13 +1,24 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, TouchableHighlight, Image } from 'react-native';
+import iconUser from '../../assets/iconUser.png';
+
 import Welcome from '../../components/Welcome';
 import Map from '../../components/Map';
 import CategoryMenu from '../../components/CategoryMenu';
+import { Box } from './styles';
 
 const Main = ({ navigation }) => (
   <>
     <ScrollView>
-      <Welcome />
+      <Box>
+        <Welcome />
+        <TouchableHighlight
+          onPress={() => navigation.navigate('Settings')}
+          underlayColor="transparent"
+        >
+          <Image source={iconUser} />
+        </TouchableHighlight>
+      </Box>
       <Map />
       <CategoryMenu navigation={navigation} />
     </ScrollView>

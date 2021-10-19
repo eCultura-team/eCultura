@@ -15,6 +15,7 @@ import CategoryList from '../pages/CategoryList';
 import Login from '../pages/Login';
 import RegisterContent from '../pages/Register';
 import Settings from '../pages/Settings';
+import ResetPassword from '../pages/ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -65,6 +66,13 @@ const Navigation = () => {
             <Stack.Screen
               name="Register"
               component={RegisterContent}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
               options={{
                 headerShown: false,
               }}

@@ -119,7 +119,7 @@ const Login = ({ navigation }) => {
                 </Button>
 
                 <LinkContent
-                  onPress={() => console.log('Resgistrar-se')}
+                  onPress={() => navigation.navigate('ResetPassword')}
                   underlayColor="transparent"
                 >
                   <LinkText>Esqueci minha senha</LinkText>

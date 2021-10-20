@@ -7,7 +7,7 @@ export const Content = styled.View`
 `;
 
 export const ContentButton = styled.TouchableHighlight`
-  background: ${colors.secondary};
+  background: ${(props) => (props.disabled ? '#ccc' : colors.secondary)};
   width: 100%;
   height: 100%;
   border-radius: 8px;
@@ -27,4 +27,5 @@ export const Text = styled.Text`
   font-weight: 700;
   text-align: center;
   margin-top: 5px;
+  width: 90%;
 `;

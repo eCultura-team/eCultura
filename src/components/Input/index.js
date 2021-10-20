@@ -31,7 +31,7 @@ const Input = ({
             placeholder={placeholder}
             secureTextEntry={seePassword}
             onChangeText={(text) => handleChange(text)}
-            value={value}
+            defaultValue={value}
           />
           <SeePassword
             onPress={() => setSeePassword(!seePassword)}
@@ -43,10 +43,11 @@ const Input = ({
       ) : (
         <InputText
           placeholder={placeholder}
+          defaultValue={value}
           onChangeText={(text) => handleChange(text)}
         />
       )}
-      <HelpText>{helpText}</HelpText>
+      <HelpText>{helpText ?? ''}</HelpText>
     </Content>
   );
 };

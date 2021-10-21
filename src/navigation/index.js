@@ -59,6 +59,8 @@ const Navigation = () => {
                 ? 'Login'
                 : accessToken === null && userName !== null
                 ? 'Home'
+                : accessToken !== null && userName === null
+                ? 'Begin'
                 : 'Home'
             }
             screenOptions={NavigationStyle}

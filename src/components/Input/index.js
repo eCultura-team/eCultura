@@ -6,9 +6,10 @@ import CloseEye from '../../assets/closeEye.png';
 import {
   InputText,
   Content,
-  ContentPassword,
+  Box,
   SeePassword,
   HelpText,
+  ImageContent,
 } from './styles';
 import { colors } from '../../tokens';
 
@@ -19,34 +20,54 @@ const Input = ({
   value,
   helpText,
   password,
+  disabled,
+  icon,
 }) => {
   const [seePassword, setSeePassword] = useState(true);
 
   return (
     <Content error={!!helpText}>
-      {password ? (
-        <ContentPassword>
-          <InputText
-            name={name}
-            placeholder={placeholder}
-            secureTextEntry={seePassword}
-            onChangeText={(text) => handleChange(text)}
-            defaultValue={value}
-          />
-          <SeePassword
-            onPress={() => setSeePassword(!seePassword)}
-            underlayColor={colors.white}
-          >
-            <Image source={seePassword ? Eye : CloseEye} />
-          </SeePassword>
-        </ContentPassword>
-      ) : (
-        <InputText
-          placeholder={placeholder}
-          defaultValue={value}
-          onChangeText={(text) => handleChange(text)}
-        />
-      )}
+      <Box>
+        {password ? (
+          <>
+            <InputText
+              name={name}
+              placeholder={placeholder}
+              secureTextEntry={seePassword}
+              onChangeText={(text) => handleChange(text)}
+              defaultValue={value}
+              editable={!disabled}
+            />
+            <ImageContent
+              onPress={() => setSeePassword(!seePassword)}
+              underlayColor={colors.white}
+            >
+              <Image source={seePassword ? Eye : CloseEye} />
+            </ImageContent>
+          </>
+        ) : (
+          <>
+            <InputText
+              placeholder={placeholder}
+              defaultValue={value}
+              onChangeText={(text) => handleChange(text)}
+              editable={!disabled}
+            />
+            {icon && (
+              <ImageContent
+                onPress={
+                  disabled
+                    ? () => alert('Este campo não pode ser alterado')
+                    : null
+                }
+                underlayColor={colors.white}
+              >
+                <Image source={icon} />
+              </ImageContent>
+            )}
+          </>
+        )}
+      </Box>
       <HelpText>{helpText ?? ''}</HelpText>
     </Content>
   );

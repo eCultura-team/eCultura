@@ -5,7 +5,7 @@ export const Content = styled.View`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 80%;
+  width: 100%;
   height: 60px;
   margin-bottom: 30px;
   border: 2px solid ${({ error }) => (error ? 'red' : colors.white)};
@@ -22,7 +22,7 @@ export const InputText = styled.TextInput`
   font-weight: 400;
 `;
 
-export const ContentPassword = styled.View`
+export const Box = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -32,6 +32,18 @@ export const ContentPassword = styled.View`
 `;
 
 export const SeePassword = styled.TouchableHighlight`
+  height: 100%;
+  width: 16%;
+  position: absolute;
+  right: 0;
+  background: ${colors.white};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+`;
+
+export const ImageContent = styled.TouchableHighlight`
   height: 100%;
   width: 16%;
   position: absolute;

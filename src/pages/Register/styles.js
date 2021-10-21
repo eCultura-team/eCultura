@@ -25,7 +25,7 @@ export const SeparatorText = styled.Text`
 export const Form = styled.View`
   align-items: center;
   display: flex;
-  width: 100%;
+  width: 80%;
   height: 350px;
   justify-content: center;
 `;

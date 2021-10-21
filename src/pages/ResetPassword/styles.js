@@ -25,7 +25,7 @@ export const SeparatorText = styled.Text`
 export const Form = styled.View`
   align-items: center;
   display: flex;
-  width: 100%;
+  width: 80%;
   height: 310px;
   justify-content: center;
 `;
@@ -50,7 +50,7 @@ export const LogoContent = styled.View`
 `;
 
 export const LogoImage = styled.Image`
-  width: 322px;
+  width: 326px;
   height: 69px;
 `;
 

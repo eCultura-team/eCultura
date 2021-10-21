@@ -5,6 +5,7 @@ import Favorites from '../../assets/favorites.png';
 import Password from '../../assets/password.png';
 import Blocked from '../../assets/blocked.png';
 import Edit from '../../assets/edit.png';
+import Checked from '../../assets/checked.png';
 
 import fire from '../../services/fire';
 import Input from '../../components/Input';
@@ -15,6 +16,7 @@ import api from '../../services/api';
 import Title from '../../components/Title';
 import BigButton from '../../components/BigButton';
 import Loading from '../../components/Loading';
+import Button from '../../components/Button';
 import {
   Container,
   TitleBox,
@@ -25,6 +27,7 @@ import {
   InfoContent,
   Label,
   Box,
+  ButtonBox,
 } from './styles';
 
 const Settings = ({ navigation }) => {
@@ -32,6 +35,8 @@ const Settings = ({ navigation }) => {
   const [logged, setLogged] = useState();
   const [userEmail, setUserEmail] = useState();
   const { userName, setUserName, setAccessToken } = useStore();
+  const [newUserName, setNewUserName] = useState(userName);
+  const [nameError, setNameError] = useState(false);
 
   const signOut = () => {
     setIsLoading(true);
@@ -84,6 +89,16 @@ const Settings = ({ navigation }) => {
       });
   };
 
+  const storeName = async () => {
+    if (newUserName.length === 0 || newUserName.length >= 18) {
+      setNameError('O nome deve ter no mínimo 1 e no máximo 18 letras');
+    } else {
+      await AsyncStorage.setItem('userName', newUserName);
+      setUserName(newUserName);
+      alert('Seu nome foi atualizado 😎');
+    }
+  };
+
   useEffect(() => {
     isLogged();
   }, []);
@@ -131,9 +146,23 @@ const Settings = ({ navigation }) => {
                     placeholder="Nome do usuário"
                     value={userName}
                     icon={Edit}
-                    handleChange={(text) => console.log(text)}
+                    helpText={nameError}
+                    handleChange={(text) => {
+                      setNameError(false);
+                      setNewUserName(text);
+                    }}
                   />
                 </Box>
+
+                <ButtonBox>
+                  <Button
+                    icon={Checked}
+                    disabled={newUserName === userName}
+                    handle={storeName}
+                  >
+                    Salvar alteração
+                  </Button>
+                </ButtonBox>
 
                 {logged && (
                   <Box>

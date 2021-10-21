@@ -55,6 +55,14 @@ export const Box = styled.View`
   height: 100px;
 `;
 
+export const ButtonBox = styled.View`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+`;
+
 export const Label = styled.Text`
   font-size: ${fontSizes.medium}px;
   font-family: ${fontFamilies.primary};

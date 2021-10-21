@@ -3,10 +3,14 @@ import { AsyncStorage } from 'react-native';
 import Logout from '../../assets/logout.png';
 import Favorites from '../../assets/favorites.png';
 import Password from '../../assets/password.png';
+import Blocked from '../../assets/blocked.png';
+import Edit from '../../assets/edit.png';
 
 import fire from '../../services/fire';
 import Input from '../../components/Input';
 import { message } from '../../utils/error/constants';
+import { useStore } from '../../providers/store';
+import api from '../../services/api';
 
 import Title from '../../components/Title';
 import BigButton from '../../components/BigButton';
@@ -18,13 +22,16 @@ import {
   UserInfo,
   Options,
   Subtitle,
+  InfoContent,
+  Label,
+  Box,
 } from './styles';
-import { useStore } from '../../providers/store';
 
 const Settings = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logged, setLogged] = useState();
-  const { userName } = useStore();
+  const [userEmail, setUserEmail] = useState();
+  const { userName, setUserName, setAccessToken } = useStore();
 
   const signOut = () => {
     setIsLoading(true);
@@ -33,8 +40,11 @@ const Settings = ({ navigation }) => {
       .auth()
       .signOut()
       .then(async () => {
-        await AsyncStorage.removeItem('token');
         await AsyncStorage.removeItem('userName');
+        await AsyncStorage.removeItem('token');
+
+        setAccessToken(null);
+        setUserName(null);
         navigation.navigate('Login');
       })
       .catch((error) => console.log(error))
@@ -47,16 +57,21 @@ const Settings = ({ navigation }) => {
     if (token === null) {
       setLogged(false);
     } else {
+      api
+        .get('/getUserData')
+        .then(({ data: { email } }) => setUserEmail(email))
+        .catch((e) => console.log(e));
+
       setLogged(true);
     }
   };
 
-  const SendPassword = (email) => {
+  const SendPassword = () => {
     setIsLoading(true);
 
     fire
       .auth()
-      .sendPasswordResetEmail(email)
+      .sendPasswordResetEmail(userEmail)
       .then(() => {
         setIsLoading(false);
         alert(
@@ -87,7 +102,8 @@ const Settings = ({ navigation }) => {
               <BigButton
                 image={Password}
                 text="Redefinir senha"
-                handle={() => SendPassword('teste@teste.com')}
+                disabled={!logged}
+                handle={SendPassword}
               />
               <BigButton
                 image={Favorites}
@@ -106,12 +122,32 @@ const Settings = ({ navigation }) => {
               <TitleBox>
                 <Subtitle>Informações do usuário</Subtitle>
               </TitleBox>
-              <Input
-                name="userName"
-                placeholder="Nome do usuário"
-                value={userName}
-                handleChange={() => console.log('email')}
-              />
+
+              <InfoContent>
+                <Box>
+                  <Label>Nome do usuário</Label>
+                  <Input
+                    name="userName"
+                    placeholder="Nome do usuário"
+                    value={userName}
+                    icon={Edit}
+                    handleChange={(text) => console.log(text)}
+                  />
+                </Box>
+
+                {logged && (
+                  <Box>
+                    <Label>E-mail</Label>
+                    <Input
+                      name="userName"
+                      placeholder="Nome do usuário"
+                      value={userEmail}
+                      icon={Blocked}
+                      disabled
+                    />
+                  </Box>
+                )}
+              </InfoContent>
             </UserInfo>
           </Content>
         </>

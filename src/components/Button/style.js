@@ -20,7 +20,7 @@ export const ButtonContentIcon = styled.View`
   align-items: center;
   justify-content: center;
   display: flex;
-  background: ${colors.darkGreen};
+  background: ${(props) => props.disabled ? colors.gray : colors.darkGreen};
   width: 15%;
   padding: 10px;
   height: 100%;
@@ -29,7 +29,7 @@ export const ButtonContentIcon = styled.View`
 `;
 
 export const ButtonContentText = styled.View`
-  background: ${colors.secondary};
+  background: ${(props) => props.disabled ? '#ccc' : colors.secondary};
   width: 85%;
   height: 100%;
   align-items: center;

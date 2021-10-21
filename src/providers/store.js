@@ -4,6 +4,7 @@ const storeContext = createContext();
 
 const Store = ({ children }) => {
   const [userName, setUserName] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   const [museumResults, setMuseumResults] = useState([]);
   const [theatreResults, setTheatreResults] = useState([]);
   const [marketResults, setMarketResults] = useState([]);
@@ -14,6 +15,8 @@ const Store = ({ children }) => {
       <storeContext.Provider
         value={{
           userName,
+          accessToken,
+          setAccessToken,
           setUserName,
           museumResults,
           setMuseumResults,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, BackHandler } from 'react-native';
-import LogoutImg from '../../assets/Logout.png';
+import Exit from '../../assets/exit.png';
 import { LogoutContent } from './style';
 import { colors } from '../../tokens';
 
@@ -10,7 +10,7 @@ const Logout = () => (
       onPress={BackHandler.exitApp}
       underlayColor={colors.secondary}
     >
-      <Image source={LogoutImg} />
+      <Image source={Exit} />
     </LogoutContent>
   </>
 );

@@ -33,6 +33,8 @@
     "react/style-prop-object": "off",
     "no-alert": "off",
     "no-underscore-dangle": "off",
-    "consistent-return": "off"
+    "consistent-return": "off",
+    "import/no-unresolved": "off",
+    "no-nested-ternary": "off"
   }
 }

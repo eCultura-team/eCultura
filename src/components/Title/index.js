@@ -1,7 +1,7 @@
 import React from 'react';
 import { TitleContent, TitleContentText } from './style';
 
-const CategoryTitle = ({ children }) => (
+const Title = ({ children }) => (
   <>
     <TitleContent>
       <TitleContentText>{children}</TitleContentText>
@@ -9,4 +9,4 @@ const CategoryTitle = ({ children }) => (
   </>
 );
 
-export default CategoryTitle;
+export default Title;

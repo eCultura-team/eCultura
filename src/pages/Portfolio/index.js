@@ -6,31 +6,18 @@ import global from '../../assets/global.png';
 import phone from '../../assets/phone.png';
 import navigation from '../../assets/navigation.png';
 import * as S from './style';
-import placeSearchAPI from '../../services/WikiAPI/placeSearch';
 import Button from '../../components/Button';
 import { useStore } from '../../providers/store';
 import { colors, fontSizes } from '../../tokens';
 
 const Portfolio = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [infoWiki, setInfoWiki] = useState();
   const [isModal, setIsModal] = useState(false);
-  const { infoREC } = route.params;
   const { userName } = useStore();
-
-  const getWikiPlace = async () => {
-    const response = await placeSearchAPI.get(
-      `api.php?format=json&action=query&generator=search&gsrlimit=1&prop=extracts%7Cpageimages&pithumbsize=800&origin=*&exintro&explaintext&exsentences=10&exlimit=max&gsrsearch=${infoREC.title}`,
-    );
-    const { pages } = response.data.query;
-    const pageid = Object.keys(pages);
-    const place = pages[pageid];
-    setInfoWiki(place);
-    setIsLoading(false);
-  };
+  const { data } = route.params;
 
   useEffect(() => {
-    getWikiPlace();
+    setIsLoading(false);
   }, []);
 
   return (
@@ -43,9 +30,9 @@ const Portfolio = ({ route }) => {
         <>
           <ScrollView>
             <S.PortifolioContent>
-              {infoWiki.thumbnail ? (
+              {data?.photo[0] ? (
                 <Image
-                  source={{ uri: infoWiki.thumbnail.source }}
+                  source={{ uri: data?.photo[0] }}
                   style={{ width: 353, height: 207, borderRadius: 8 }}
                 />
               ) : (
@@ -53,26 +40,19 @@ const Portfolio = ({ route }) => {
                   <S.WithoutImageTitle>Imagem Indisponível</S.WithoutImageTitle>
                 </S.WithoutImage>
               )}
-              <S.Title>{infoREC.title}</S.Title>
+              <S.Title>{data?.name}</S.Title>
               <S.SubTitle>Descrição</S.SubTitle>
-              <S.Text>{infoWiki.extract}</S.Text>
-              <S.Text>{infoREC.description}</S.Text>
+              <S.Text>{data?.description}</S.Text>
               <S.SubTitle>Endereço</S.SubTitle>
-              <S.Address>
-                {infoREC.addressStreet && `${infoREC.addressStreet}, `}
-                {infoREC.addressDistrict}, Recife-PE.
-              </S.Address>
+              <S.Address>{data?.address}, Recife-PE.</S.Address>
               <S.PortifolioContact>
-                {infoREC.phone === undefined || infoREC.phone === '' ? null : (
-                  <Button
-                    icon={phone}
-                    url={`tel:${infoREC.phone.slice(0, 14)}`}
-                  >
+                {data?.phone !== '' && (
+                  <Button icon={phone} url={`tel:${data?.phone}`}>
                     Entre em contato
                   </Button>
                 )}
-                {infoREC.site === undefined ? null : (
-                  <Button icon={global} url={infoREC.site}>
+                {data?.website !== '' && (
+                  <Button icon={global} url={data?.website}>
                     Acesse o site da instituição
                   </Button>
                 )}
@@ -127,8 +107,8 @@ const Portfolio = ({ route }) => {
               },
             }}
             options={{
-              latitude: infoREC.location.latitude,
-              longitude: infoREC.location.longitude,
+              latitude: data?.lat,
+              longitude: data?.long,
               dialogTitle: `${userName}, estamos quase lá...`,
               dialogMessage: 'Qual aplicativo gostaria de usar?',
               cancelText: 'Cancelar',

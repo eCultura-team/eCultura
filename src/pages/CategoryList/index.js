@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FlatList, Image } from 'react-native';
-import CategoryTitle from '../../components/CategoryTitle';
+import Title from '../../components/Title';
 import CategoryItem from '../../components/CategoryItem';
 import { useStore } from '../../providers/store';
 import * as S from './style';
@@ -33,7 +33,7 @@ const CategoryList = ({ route, navigation }) => {
 
   const filterPlaces = (array) => {
     const result = array.filter((item) =>
-      item.nome.toLowerCase().includes(inputText),
+      item.name.toLowerCase().includes(inputText),
     );
     return result;
   };
@@ -44,7 +44,7 @@ const CategoryList = ({ route, navigation }) => {
 
   return (
     <>
-      <CategoryTitle>{route.params.title}</CategoryTitle>
+      <Title>{route.params.title}</Title>
       <S.CategoryListContainer>
         <S.CategorySearch>
           <S.CategorySearchInput
@@ -79,23 +79,9 @@ const CategoryList = ({ route, navigation }) => {
               ? currentCategory
               : filterPlaces(currentCategory)
           }
-          keyExtractor={(item) => item.nome}
+          keyExtractor={(item) => item.name}
           renderItem={({ item }) => (
-            <CategoryItem
-              infoREC={{
-                title: item.nome,
-                description: item.descricao,
-                addressDistrict: item.bairro,
-                addressStreet: item.logradouro,
-                phone: `${item.telefone || item.Telefone}`,
-                site: item.site,
-                location: {
-                  latitude: item.latitude,
-                  longitude: item.longitude,
-                },
-              }}
-              navigation={navigation}
-            />
+            <CategoryItem data={item} navigation={navigation} />
           )}
         />
       )}

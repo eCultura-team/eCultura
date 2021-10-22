@@ -3,12 +3,11 @@ import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useStore } from '../../providers/store';
-import { MapContainer, MapContent, ButtonMyLocation } from './style';
+import { MapContainer, MapContent, ButtonMyLocation, Indicator } from './style';
+
 import loading from '../../assets/loading.gif';
 import currentlocation from '../../assets/currentlocation.png';
-import theatreAPI from '../../services/RecAPI/theatre';
-import museumAPI from '../../services/RecAPI/museum';
-import marketAPI from '../../services/RecAPI/market';
+import api from '../../services/api';
 import { colors } from '../../tokens';
 
 const mapStyle = {
@@ -36,7 +35,7 @@ const mapStyle = {
   ],
 };
 
-const Map = () => {
+const Map = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const initialLocation = {
     latitude: -8.0585076,
@@ -51,44 +50,33 @@ const Map = () => {
   const { marketResults, setMarketResults } = useStore();
   const mapRef = useRef(null);
 
-  const theaterMapMarkers = () =>
-    theatreResults.map((theatre) => (
-      <Marker
-        key={theatre._id}
-        pinColor="teal"
-        coordinate={{
-          latitude: theatre.latitude,
-          longitude: theatre.longitude,
-        }}
-        title={theatre.nome}
-      />
-    ));
+  const mapMarkers = () => {
+    const places = [...theatreResults.concat(marketResults, museumResults)];
 
-  const marketMapMarkers = () =>
-    marketResults.map((market) => (
-      <Marker
-        key={market._id}
-        pinColor="indigo"
-        coordinate={{
-          latitude: market.latitude,
-          longitude: market.longitude,
-        }}
-        title={market.nome}
-      />
-    ));
-
-  const museumMapMarkers = () =>
-    museumResults.map((museum) => (
-      <Marker
-        key={museum._id}
-        pinColor="green"
-        coordinate={{
-          latitude: museum.latitude == null ? -8.044618 : museum.latitude,
-          longitude: museum.longitude,
-        }}
-        title={museum.nome}
-      />
-    ));
+    return (
+      <>
+        {places.map((data) => (
+          <Marker
+            key={data?.idLocation}
+            pinColor={
+              data?.type === 1 ? 'green' : data?.type === 2 ? 'teal' : 'indigo'
+            }
+            coordinate={{
+              latitude: data?.lat,
+              longitude: data?.long,
+            }}
+          >
+            <MapView.Callout
+              tooltip
+              onPress={() => navigation.navigate('Portfolio', { data })}
+            >
+              <Indicator type={data?.type}>{data?.name}</Indicator>
+            </MapView.Callout>
+          </Marker>
+        ))}
+      </>
+    );
+  };
 
   const getLocation = () => {
     Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest })
@@ -117,22 +105,19 @@ const Map = () => {
     setIsLoading(false);
   };
 
-  const getTheatre = async () => {
-    const response = await theatreAPI.get();
-    const { records } = response.data.result;
-    setTheatreResults(records);
-  };
-
-  const getMuseum = async () => {
-    const response = await museumAPI.get();
-    const { records } = response.data.result;
-    setMuseumResults(records);
-  };
-
-  const getMarket = async () => {
-    const response = await marketAPI.get();
-    const { records } = response.data.result;
-    setMarketResults(records);
+  const getAllLocations = () => {
+    api
+      .get('/getLocations')
+      .then(({ data: { locations } }) => {
+        setMuseumResults([...locations.filter((item) => item.type === 1)]);
+        setTheatreResults([...locations.filter((item) => item.type === 2)]);
+        setMarketResults([...locations.filter((item) => item.type === 3)]);
+      })
+      .catch(() =>
+        alert(
+          'Erro ao tentar conectar-se ao servidor, tente novamente mais tarde. 😤',
+        ),
+      );
   };
 
   const getPlaces = () => {
@@ -142,9 +127,7 @@ const Map = () => {
         theatreResults.length === 0 &&
         marketResults.length === 0
       ) {
-        getTheatre();
-        getMuseum();
-        getMarket();
+        getAllLocations();
       }
     } catch (error) {
       console.log(error);
@@ -195,9 +178,7 @@ const Map = () => {
                 toolbarEnabled={false}
                 showsUserLocation
               >
-                {theaterMapMarkers()}
-                {marketMapMarkers()}
-                {museumMapMarkers()}
+                {mapMarkers()}
               </MapView>
               <ButtonMyLocation
                 onPress={() => centralizeCamera()}

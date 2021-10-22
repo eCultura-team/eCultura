@@ -1,14 +1,21 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect } from 'react';
 import { AsyncStorage } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { colors } from '../tokens';
+
 import { useStore } from '../providers/store';
+
+import { colors } from '../tokens';
 import Logout from '../components/Logout';
 import Main from '../pages/Main';
 import Begin from '../pages/Begin';
 import Portfolio from '../pages/Portfolio';
 import CategoryList from '../pages/CategoryList';
+import Login from '../pages/Login';
+import RegisterContent from '../pages/Register';
+import Settings from '../pages/Settings';
+import ResetPassword from '../pages/ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -21,13 +28,17 @@ const NavigationStyle = {
 };
 
 const Navigation = () => {
-  const { userName, setUserName } = useStore();
+  const { accessToken, setAccessToken, userName, setUserName } = useStore();
   const [isLoading, setIsLoading] = useState(true);
 
   async function isStored() {
     try {
-      const name = await AsyncStorage.getItem('1');
+      const token = await AsyncStorage.getItem('token');
+      setAccessToken(token);
+
+      const name = await AsyncStorage.getItem('userName');
       setUserName(name);
+
       setIsLoading(false);
     } catch (error) {
       alert('Nome não registrado.');
@@ -43,9 +54,38 @@ const Navigation = () => {
       {isLoading ? null : (
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName={userName === null ? 'Begin' : 'Home'}
+            initialRouteName={
+              accessToken === null && userName === null
+                ? 'Login'
+                : accessToken === null && userName !== null
+                ? 'Home'
+                : accessToken !== null && userName === null
+                ? 'Begin'
+                : 'Home'
+            }
             screenOptions={NavigationStyle}
           >
+            <Stack.Screen
+              name="Register"
+              component={RegisterContent}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPassword}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                headerShown: false,
+              }}
+            />
             <Stack.Screen
               name="Begin"
               component={Begin}
@@ -58,6 +98,13 @@ const Navigation = () => {
               component={Main}
               options={{
                 headerLeft: () => <Logout />,
+                title: '',
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={Settings}
+              options={{
                 title: '',
               }}
             />

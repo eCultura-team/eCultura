@@ -15,7 +15,7 @@ const Begin = ({ navigation }) => {
       if (userName === null) {
         alert('Ops, parece que você esqueceu de digitar seu nome.😕');
       } else {
-        await AsyncStorage.setItem('1', userName);
+        await AsyncStorage.setItem('userName', userName);
         navigation.navigate('Home');
       }
     } catch (error) {

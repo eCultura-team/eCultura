@@ -19,7 +19,7 @@ const Main = ({ navigation }) => (
           <Image source={iconUser} />
         </TouchableHighlight>
       </Box>
-      <Map />
+      <Map navigation={navigation} />
       <CategoryMenu navigation={navigation} />
     </ScrollView>
   </>

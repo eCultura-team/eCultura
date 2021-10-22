@@ -69,9 +69,9 @@ export const Address = styled.Text`
 
 export const PortifolioContact = styled.View`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   margin-top: 20px;
-  height: 120px;
+  height: 180px;
   margin-bottom: 20px;
 `;

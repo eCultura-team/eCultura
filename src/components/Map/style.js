@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { colors } from '../../tokens';
 
 export const MapContainer = styled.View`
   align-items: center;
@@ -17,6 +18,20 @@ export const MapContent = styled.View`
   justify-content: center;
   align-items: center;
   position: relative;
+`;
+
+export const Indicator = styled.Text`
+  background: ${(props) =>
+    props.type === 1
+      ? colors.darkGreen
+      : props.type === 2
+      ? colors.secondary
+      : colors.primary};
+  color: ${colors.white};
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px;
+  border-radius: 30px;
 `;
 
 export const ButtonMyLocation = styled.TouchableHighlight`

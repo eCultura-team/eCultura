@@ -34,6 +34,7 @@
     "no-alert": "off",
     "no-underscore-dangle": "off",
     "consistent-return": "off",
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-nested-ternary": "off"
   }
 }

@@ -70,13 +70,11 @@ const Portfolio = ({ route }) => {
               animationIn: 'slideInUp',
             }}
             style={{
-              container: {
-                backgroundColor: colors.secondary,
-              },
               headerContainer: {
                 paddingTop: 24,
                 paddingBottom: 24,
-                borderBottomColor: colors.secondary,
+                borderBottomColor: colors.primary,
+                backgroundColor: colors.primary,
               },
               itemContainer: {
                 paddingTop: 20,
@@ -84,26 +82,27 @@ const Portfolio = ({ route }) => {
                 backgroundColor: colors.white,
               },
               separatorStyle: {
-                backgroundColor: colors.darkGreen,
+                backgroundColor: colors.primary,
               },
               itemText: {
                 color: colors.primary,
               },
               titleText: {
-                color: colors.white,
+                color: colors.secondary,
                 fontWeight: 'bold',
-                fontSize: fontSizes.large,
+                fontSize: fontSizes.medium,
               },
               subtitleText: {
-                color: colors.primary,
+                color: colors.white,
                 fontWeight: '700',
-                fontSize: fontSizes.medium,
+                fontSize: fontSizes.large,
               },
               cancelButtonContainer: {
                 backgroundColor: colors.secondary,
               },
               cancelButtonText: {
-                color: colors.primary,
+                color: colors.white,
+                fontSize: fontSizes.medium,
               },
             }}
             options={{

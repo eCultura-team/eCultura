@@ -34,6 +34,27 @@ export const PortifolioContent = styled.View`
   padding: 0 20px;
 `;
 
+export const ImageContent = styled.View`
+  display: flex;
+  width: 100%;
+  height: 210px;
+  position: relative;
+`;
+
+export const Favorite = styled.TouchableHighlight`
+  display: flex;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  border-radius: 50px;
+  background: ${colors.transparent};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const Title = styled.Text`
   color: ${colors.primary};
   font-weight: 700;

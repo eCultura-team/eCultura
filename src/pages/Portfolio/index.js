@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Image, ScrollView } from 'react-native';
+/* eslint-disable global-require */
+import React, { useState, useEffect, useRef } from 'react';
+import { Image, ScrollView, AsyncStorage } from 'react-native';
 import { Popup } from 'react-native-map-link';
+import LottieView from 'lottie-react-native';
 import loading from '../../assets/loading.gif';
 import global from '../../assets/global.png';
 import phone from '../../assets/phone.png';
@@ -10,15 +12,65 @@ import Button from '../../components/Button';
 import { useStore } from '../../providers/store';
 import { colors, fontSizes } from '../../tokens';
 
+import api from '../../services/api';
+
 const Portfolio = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModal, setIsModal] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [logged, setLogged] = useState();
+  const [userId, setUserId] = useState('');
   const { userName } = useStore();
   const { data } = route.params;
 
+  const animation = useRef(null);
+  const isFirstRun = useRef(true);
+
+  const isLogged = async () => {
+    const token = await AsyncStorage.getItem('token');
+
+    if (token === null) {
+      setLogged(false);
+    } else {
+      api
+        .get('/getUserData')
+        .then(({ data: { uid } }) => setUserId(uid))
+        .catch((e) => console.log(e));
+      setLogged(true);
+    }
+  };
+
+  const handleFavorite = () => {
+    if (!logged) {
+      alert(
+        'Apenas usuários cadastrados podem favoritar lugares, cadastre-se ou faça login no app.',
+      );
+    } else {
+      setIsFavorited(!isFavorited);
+    }
+  };
+
   useEffect(() => {
+    isLogged();
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (animation.current) {
+      if (isFirstRun.current) {
+        if (isFavorited) {
+          animation.current.play(120, 190);
+        } else {
+          animation.current.play(1, 84);
+        }
+        isFirstRun.current = false;
+      } else if (isFavorited) {
+        animation.current.play(1, 190);
+      } else {
+        animation.current.play(120, 84);
+      }
+    }
+  }, [animation.current, isFavorited]);
 
   return (
     <>
@@ -31,10 +83,24 @@ const Portfolio = ({ route }) => {
           <ScrollView>
             <S.PortifolioContent>
               {data?.photo[0] ? (
-                <Image
-                  source={{ uri: data?.photo[0] }}
-                  style={{ width: 353, height: 207, borderRadius: 8 }}
-                />
+                <S.ImageContent>
+                  <Image
+                    source={{ uri: data?.photo[0] }}
+                    style={{ width: 353, height: 207, borderRadius: 8 }}
+                  />
+                  <S.Favorite
+                    onPress={handleFavorite}
+                    underlayColor={colors.transparent}
+                  >
+                    <LottieView
+                      ref={animation}
+                      source={require('../../assets/lottie/favorite.json')}
+                      autoPlay={false}
+                      loop={false}
+                      style={{ width: 50, height: 50, marginTop: 3.3 }}
+                    />
+                  </S.Favorite>
+                </S.ImageContent>
               ) : (
                 <S.WithoutImage>
                   <S.WithoutImageTitle>Imagem Indisponível</S.WithoutImageTitle>

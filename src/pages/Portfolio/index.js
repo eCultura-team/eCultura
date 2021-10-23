@@ -1,12 +1,22 @@
 /* eslint-disable global-require */
 import React, { useState, useEffect, useRef } from 'react';
-import { Image, ScrollView, AsyncStorage } from 'react-native';
+import {
+  Image,
+  ScrollView,
+  AsyncStorage,
+  Dimensions,
+  View,
+  Linking,
+} from 'react-native';
+import WebView from 'react-native-webview';
 import { Popup } from 'react-native-map-link';
 import LottieView from 'lottie-react-native';
+import { Modalize } from 'react-native-modalize';
 import loading from '../../assets/loading.gif';
 import global from '../../assets/global.png';
 import phone from '../../assets/phone.png';
 import navigation from '../../assets/navigation.png';
+import Close from '../../assets/close.png';
 import * as S from './style';
 import Button from '../../components/Button';
 import { useStore } from '../../providers/store';
@@ -20,9 +30,12 @@ const Portfolio = ({ route }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [logged, setLogged] = useState();
   const [userId, setUserId] = useState('');
+  const { height: initialHeight } = Dimensions.get('window');
+  const [height, setHeight] = useState(initialHeight);
   const { userName } = useStore();
   const { data } = route.params;
 
+  const modalControl = useRef(null);
   const animation = useRef(null);
   const isFirstRun = useRef(true);
 
@@ -48,6 +61,10 @@ const Portfolio = ({ route }) => {
     } else {
       setIsFavorited(!isFavorited);
     }
+  };
+
+  const handleLayout = ({ layout }) => {
+    setHeight(layout.height);
   };
 
   useEffect(() => {
@@ -118,7 +135,10 @@ const Portfolio = ({ route }) => {
                   </Button>
                 )}
                 {data?.website !== '' && (
-                  <Button icon={global} url={data?.website}>
+                  <Button
+                    icon={global}
+                    handle={() => modalControl.current?.open()}
+                  >
                     Acesse o site da instituição
                   </Button>
                 )}
@@ -179,6 +199,47 @@ const Portfolio = ({ route }) => {
               cancelText: 'Cancelar',
             }}
           />
+
+          <Modalize
+            modalHeight={800}
+            ref={modalControl}
+            panGestureEnabled={false}
+            onLayout={handleLayout}
+            HeaderComponent={
+              <S.ModalHeader>
+                <S.ModalTitle>eCultura Browser</S.ModalTitle>
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    width: 90,
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <S.ModalOptions
+                    onPress={() => Linking.openURL(data?.website)}
+                    underlayColor={colors.darkGreen}
+                  >
+                    <S.ModalOptionsImage source={global} />
+                  </S.ModalOptions>
+                  <S.ModalOptions
+                    onPress={() => modalControl.current?.close()}
+                    underlayColor={colors.darkGreen}
+                  >
+                    <S.ModalOptionsImage source={Close} />
+                  </S.ModalOptions>
+                </View>
+              </S.ModalHeader>
+            }
+          >
+            <ScrollView contentContainerStyle={{ flexGrow: 1, height }}>
+              <WebView
+                style={{ minHeight: height }}
+                source={{ uri: data?.website }}
+                scrollEnabled
+              />
+            </ScrollView>
+          </Modalize>
         </>
       )}
     </>

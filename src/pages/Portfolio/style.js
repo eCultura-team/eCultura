@@ -96,3 +96,38 @@ export const PortifolioContact = styled.View`
   height: 180px;
   margin-bottom: 20px;
 `;
+
+export const ModalHeader = styled.View`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 60px;
+  padding: 0 20px;
+  background: ${colors.primary};
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  flex-direction: row;
+`;
+
+export const ModalTitle = styled.Text`
+  color: ${colors.white};
+  font-size: ${fontSizes.large}px;
+  font-weight: bold;
+  text-align: center;
+`;
+
+export const ModalOptions = styled.TouchableHighlight`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: ${colors.secondary};
+  border-radius: 50px;
+`;
+
+export const ModalOptionsImage = styled.Image`
+  width: 16px;
+  height: 16px;
+`;

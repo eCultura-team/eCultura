@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { AsyncStorage, Keyboard } from 'react-native';
+import { Modalize } from 'react-native-modalize';
 import Logout from '../../assets/logout.png';
 import Favorites from '../../assets/favorites.png';
 import Password from '../../assets/password.png';
 import Blocked from '../../assets/blocked.png';
 import Edit from '../../assets/edit.png';
 import Checked from '../../assets/checked.png';
+import Back from '../../assets/Back.png';
+import Sucess from '../../assets/sucess.png';
 
 import fire from '../../services/fire';
 import Input from '../../components/Input';
-import { message } from '../../utils/error/constants';
+import { message, error } from '../../utils/error/constants';
 import { useStore } from '../../providers/store';
 import api from '../../services/api';
 
@@ -28,6 +31,12 @@ import {
   Label,
   Box,
   ButtonBox,
+  ModalContent,
+  ModalHeader,
+  ModalImage,
+  ModalText,
+  ModalTitle,
+  ModalFooter,
 } from './styles';
 
 const Settings = ({ navigation }) => {
@@ -37,6 +46,9 @@ const Settings = ({ navigation }) => {
   const { userName, setUserName, setAccessToken } = useStore();
   const [newUserName, setNewUserName] = useState(userName);
   const [nameError, setNameError] = useState(false);
+
+  const modalControl = useRef(null);
+  const modalControlReset = useRef(null);
 
   const signOut = () => {
     setIsLoading(true);
@@ -52,7 +64,7 @@ const Settings = ({ navigation }) => {
         setUserName(null);
         navigation.navigate('Login');
       })
-      .catch((error) => console.log(error))
+      .catch((e) => console.log(e))
       .finally(() => setIsLoading(false));
   };
 
@@ -64,7 +76,14 @@ const Settings = ({ navigation }) => {
     } else {
       api
         .get('/getUserData')
-        .then(({ data: { email } }) => setUserEmail(email))
+        .then(({ data }) => {
+          if (data.code === error.FIREBASE_AUTH_ID_TOKEN_EXPIRED) {
+            alert(message.FIREBASE_AUTH_ID_TOKEN_EXPIRED);
+            signOut();
+          } else {
+            setUserEmail(data.email);
+          }
+        })
         .catch((e) => console.log(e));
 
       setLogged(true);
@@ -79,9 +98,7 @@ const Settings = ({ navigation }) => {
       .sendPasswordResetEmail(userEmail)
       .then(() => {
         setIsLoading(false);
-        alert(
-          'Foi enviado para seu e-mail um link para a redefinição de senha. Após redefini-la, entre novamente.',
-        );
+        modalControlReset.current?.open();
       })
       .catch(() => {
         setIsLoading(false);
@@ -90,12 +107,14 @@ const Settings = ({ navigation }) => {
   };
 
   const storeName = async () => {
+    Keyboard.dismiss();
+
     if (newUserName.length === 0 || newUserName.length >= 18) {
       setNameError('O nome deve ter no mínimo 1 e no máximo 18 letras');
     } else {
       await AsyncStorage.setItem('userName', newUserName);
       setUserName(newUserName);
-      alert('Seu nome foi atualizado 😎');
+      modalControl.current?.open();
     }
   };
 
@@ -181,6 +200,59 @@ const Settings = ({ navigation }) => {
           </Content>
         </>
       )}
+
+      <Modalize
+        ref={modalControlReset}
+        modalHeight={360}
+        HeaderComponent={
+          <ModalHeader>
+            <ModalImage source={Sucess} />
+            <ModalTitle>SUCESSO</ModalTitle>
+          </ModalHeader>
+        }
+        FooterComponent={
+          <ModalFooter>
+            <Button
+              handle={() => modalControlReset.current?.close()}
+              icon={Back}
+            >
+              Fechar
+            </Button>
+          </ModalFooter>
+        }
+      >
+        <ModalContent>
+          <ModalText>
+            Acabamos de te enviar um link via e-mail para a redefinição de
+            senha. Caso não esteja em sua caixa de entrada procure em lixo
+            eletrônico. 🔐😇
+          </ModalText>
+        </ModalContent>
+      </Modalize>
+
+      <Modalize
+        ref={modalControl}
+        modalHeight={360}
+        HeaderComponent={
+          <ModalHeader>
+            <ModalImage source={Sucess} />
+            <ModalTitle>SUCESSO</ModalTitle>
+          </ModalHeader>
+        }
+        FooterComponent={
+          <ModalFooter>
+            <Button handle={() => modalControl.current?.close()} icon={Back}>
+              Fechar
+            </Button>
+          </ModalFooter>
+        }
+      >
+        <ModalContent>
+          <ModalText>
+            Ôpa {newUserName}, seu nome foi atualizado com sucesso.😄
+          </ModalText>
+        </ModalContent>
+      </Modalize>
     </Container>
   );
 };

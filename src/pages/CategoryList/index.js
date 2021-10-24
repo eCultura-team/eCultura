@@ -76,7 +76,7 @@ const CategoryList = ({ route, navigation }) => {
           }}
           data={
             inputText.length === 0
-              ? currentCategory
+              ? currentCategory.sort((a, b) => a.distance >= b.distance)
               : filterPlaces(currentCategory)
           }
           keyExtractor={(item) => item.name}

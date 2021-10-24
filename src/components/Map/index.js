@@ -1,3 +1,6 @@
+/* eslint-disable use-isnan */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-var */
 import React, { useState, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -49,6 +52,26 @@ const Map = ({ navigation }) => {
   const { theatreResults, setTheatreResults } = useStore();
   const { marketResults, setMarketResults } = useStore();
   const mapRef = useRef(null);
+
+  function toRad(Value) {
+    return (Value * Math.PI) / 180;
+  }
+
+  function calcCrow(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    var lat1 = toRad(lat1);
+    var lat2 = toRad(lat2);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+
+    return d;
+  }
 
   const mapMarkers = () => {
     const places = [...theatreResults.concat(marketResults, museumResults)];
@@ -109,9 +132,51 @@ const Map = ({ navigation }) => {
     api
       .get('/getLocations')
       .then(({ data: { locations } }) => {
-        setMuseumResults([...locations.filter((item) => item.type === 1)]);
-        setTheatreResults([...locations.filter((item) => item.type === 2)]);
-        setMarketResults([...locations.filter((item) => item.type === 3)]);
+        setMuseumResults(
+          [...locations.filter((item) => item.type === 1)].map((item) => {
+            const distance = calcCrow(
+              userLocation.latitude,
+              userLocation.longitude,
+              item.lat,
+              item.long,
+            ).toFixed(1);
+
+            return {
+              ...item,
+              distance,
+            };
+          }),
+        );
+        setTheatreResults(
+          [...locations.filter((item) => item.type === 2)].map((item) => {
+            const distance = calcCrow(
+              userLocation.latitude,
+              userLocation.longitude,
+              item.lat,
+              item.long,
+            ).toFixed(1);
+
+            return {
+              ...item,
+              distance,
+            };
+          }),
+        );
+        setMarketResults(
+          [...locations.filter((item) => item.type === 3)].map((item) => {
+            const distance = calcCrow(
+              userLocation.latitude,
+              userLocation.longitude,
+              item.lat,
+              item.long,
+            ).toFixed(1);
+
+            return {
+              ...item,
+              distance,
+            };
+          }),
+        );
       })
       .catch(() =>
         alert(
@@ -155,6 +220,10 @@ const Map = ({ navigation }) => {
       getLocation();
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    getPlaces();
+  }, [userLocation]);
 
   return (
     <>

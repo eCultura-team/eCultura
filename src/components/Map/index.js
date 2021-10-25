@@ -6,12 +6,13 @@ import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useStore } from '../../providers/store';
-import { MapContainer, MapContent, ButtonMyLocation, Indicator } from './style';
-
 import loading from '../../assets/loading.gif';
 import currentlocation from '../../assets/currentlocation.png';
+
 import api from '../../services/api';
 import { colors } from '../../tokens';
+
+import { MapContainer, MapContent, ButtonMyLocation, Indicator } from './style';
 
 const mapStyle = {
   map: {
@@ -38,7 +39,7 @@ const mapStyle = {
   ],
 };
 
-const Map = ({ navigation }) => {
+const Map = ({ navigation, modalControls }) => {
   const [isLoading, setIsLoading] = useState(true);
   const initialLocation = {
     latitude: -8.0585076,
@@ -112,18 +113,21 @@ const Map = ({ navigation }) => {
   const getPermission = () => {
     Location.requestForegroundPermissionsAsync()
       .then((data) => {
-        if (data.status !== 'granted')
-          return alert(
+        if (data.status !== 'granted') {
+          modalControls.setErrorSend(
             'A permissão de localização foi negada, por favor a permita.',
           );
+          return modalControls.control.current?.open();
+        }
 
         getLocation();
       })
-      .catch(() =>
-        alert(
-          'Houve um erro inesperado ao tentar pedir permissão de localização, por favor tente novamente depois :D',
-        ),
-      );
+      .catch(() => {
+        modalControls.setErrorSend(
+          'Houve um erro inesperado ao tentar pedir permissão de localização, por favor tente novamente depois.',
+        );
+        modalControls.control.current?.open();
+      });
 
     setIsLoading(false);
   };
@@ -178,11 +182,12 @@ const Map = ({ navigation }) => {
           }),
         );
       })
-      .catch(() =>
-        alert(
+      .catch(() => {
+        modalControls.setErrorSend(
           'Erro ao tentar conectar-se ao servidor, tente novamente mais tarde. 😤',
-        ),
-      );
+        );
+        modalControls.control.current?.open();
+      });
   };
 
   const getPlaces = () => {

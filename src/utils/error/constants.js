@@ -10,6 +10,7 @@ export const message = {
     'Não foi possível conectar ao servidor, tente novamente mais tarde.',
   FIREBASE_AUTH_INVALID_PASSWORD: 'A senha deve conter no mínimo 6 caracteres.',
   FIREBASE_AUTH_INVALID_EMAIL_PASSWORD: 'E-mail ou senha inválidos.',
-  FIREBASE_AUTH_INVALID_ACCOUNT: 'Conta inexistente.',
+  FIREBASE_AUTH_INVALID_ACCOUNT:
+    'A sua conta com o e-mail informado não existe, cadastre-se ou entre como nosso convidado. 🙁💜',
   FIREBASE_AUTH_ID_TOKEN_EXPIRED: 'Token de acesso expirado.',
 };

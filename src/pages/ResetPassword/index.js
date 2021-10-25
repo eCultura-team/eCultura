@@ -2,13 +2,12 @@ import React, { useState, useRef } from 'react';
 import { TouchableHighlight } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { Modalize } from 'react-native-modalize';
 import LogoBig from '../../assets/logoBig.png';
 import Back from '../../assets/Back.png';
-import Sucess from '../../assets/sucess.png';
-import Failed from '../../assets/failed.png';
 
 import { message } from '../../utils/error/constants';
+
+import fire from '../../services/fire';
 
 import {
   Container,
@@ -19,22 +18,17 @@ import {
   Option,
   AdviceText,
   SeparatorText,
-  ModalContent,
-  ModalImage,
-  ModalHeader,
-  ModalText,
-  ModalFooter,
-  ModalTitle,
 } from './styles';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Loading from '../../components/Loading';
-import fire from '../../services/fire';
+import Modal from '../../components/Modal';
 
 const ResetPassword = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const modalControl = useRef(null);
   const [errorSend, setErrorSend] = useState(false);
+  const [sucessSend, setSucessSend] = useState(false);
   const [initialInfo] = useState({
     email: '',
   });
@@ -52,11 +46,14 @@ const ResetPassword = ({ navigation }) => {
       .sendPasswordResetEmail(email)
       .then(() => {
         setIsLoading(false);
+        setSucessSend(
+          'Acabamos de te enviar um link via e-mail para a redefinição de senha. Caso não esteja em sua caixa de entrada procure em lixo eletrônico. 🔐😇',
+        );
         modalControl.current?.open();
       })
       .catch(() => {
         setIsLoading(false);
-        setErrorSend(true);
+        setErrorSend(message.FIREBASE_AUTH_INVALID_ACCOUNT);
         modalControl.current?.open();
       });
   };
@@ -110,31 +107,13 @@ const ResetPassword = ({ navigation }) => {
         </>
       )}
 
-      <Modalize
-        ref={modalControl}
-        modalHeight={360}
-        HeaderComponent={
-          <ModalHeader>
-            <ModalImage source={errorSend ? Failed : Sucess} />
-            <ModalTitle>{errorSend ? 'FALHA' : 'SUCESSO'}</ModalTitle>
-          </ModalHeader>
-        }
-        FooterComponent={
-          <ModalFooter>
-            <Button handle={() => handleComeback()} icon={Back}>
-              Voltar para login
-            </Button>
-          </ModalFooter>
-        }
-      >
-        <ModalContent>
-          <ModalText>
-            {errorSend
-              ? `${message.FIREBASE_AUTH_INVALID_ACCOUNT} A sua conta com o e-mail informado não existe, cadastre-se ou entre como nosso convidado. 🙁💜`
-              : 'Acabamos de te enviar um link via e-mail para a redefinição de senha. Caso não esteja em sua caixa de entrada procure em lixo eletrônico. 🔐😇'}
-          </ModalText>
-        </ModalContent>
-      </Modalize>
+      <Modal
+        control={modalControl}
+        error={errorSend}
+        buttonMessage="Voltar para login"
+        sucessMessage={sucessSend}
+        handle={handleComeback}
+      />
     </Container>
   );
 };

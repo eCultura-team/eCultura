@@ -1,19 +1,29 @@
-import React from 'react';
-import { AsyncStorage, KeyboardAvoidingView } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { AsyncStorage, KeyboardAvoidingView, Keyboard } from 'react-native';
 import { useStore } from '../../providers/store';
-import * as S from './style';
 import logo from '../../assets/logo.png';
 import Back from '../../assets/Back.png';
 import BeginBackground from '../../assets/BeginBackground.png';
+
+import * as S from './style';
 import Button from '../../components/Button';
+import Modal from '../../components/Modal';
 
 const Begin = ({ navigation }) => {
   const { userName, setUserName } = useStore();
+  const [errorSend, setErrorSend] = useState();
+
+  const modalControl = useRef();
 
   const saveName = async () => {
+    Keyboard.dismiss();
+
     try {
-      if (userName === null) {
-        alert('Ops, parece que você esqueceu de digitar seu nome.😕');
+      if (userName === null || userName.length >= 18) {
+        setErrorSend(
+          'Ops, o seu nome deve ter no mínimo 1 e no máximo 18 letras.😕',
+        );
+        modalControl.current?.open();
       } else {
         await AsyncStorage.setItem('userName', userName);
         navigation.navigate('Home');
@@ -49,6 +59,13 @@ const Begin = ({ navigation }) => {
           </Button>
         </S.BeginName>
       </KeyboardAvoidingView>
+
+      <Modal
+        control={modalControl}
+        error={errorSend}
+        buttonMessage="Fechar"
+        handle={() => modalControl.current?.close()}
+      />
     </>
   );
 };

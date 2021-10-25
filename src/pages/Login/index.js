@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { AsyncStorage, TouchableHighlight } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -24,6 +24,7 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Loading from '../../components/Loading';
+import Modal from '../../components/Modal';
 import { message } from '../../utils/error/constants';
 
 const Login = ({ navigation }) => {
@@ -39,6 +40,9 @@ const Login = ({ navigation }) => {
       password: Yup.string().required('Senha obrigatória'),
     }),
   );
+  const [errorSend, setErrorSend] = useState(false);
+
+  const modalControl = useRef();
 
   const SignIn = async (values) => {
     setIsLoading(true);
@@ -65,7 +69,8 @@ const Login = ({ navigation }) => {
       }
     } catch (error) {
       console.log(error);
-      alert(message.FIREBASE_AUTH_INVALID_EMAIL_PASSWORD);
+      setErrorSend(message.FIREBASE_AUTH_INVALID_EMAIL_PASSWORD);
+      modalControl.current?.open();
     } finally {
       setIsLoading(false);
     }
@@ -137,6 +142,13 @@ const Login = ({ navigation }) => {
           </InvitedContent>
         </>
       )}
+
+      <Modal
+        control={modalControl}
+        error={errorSend}
+        buttonMessage="Fechar"
+        handle={() => modalControl.current?.close()}
+      />
     </Container>
   );
 };

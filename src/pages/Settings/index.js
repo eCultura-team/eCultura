@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AsyncStorage, Keyboard } from 'react-native';
-import { Modalize } from 'react-native-modalize';
 import Logout from '../../assets/logout.png';
 import Favorites from '../../assets/favorites.png';
 import Password from '../../assets/password.png';
 import Blocked from '../../assets/blocked.png';
 import Edit from '../../assets/edit.png';
 import Checked from '../../assets/checked.png';
-import Back from '../../assets/Back.png';
-import Sucess from '../../assets/sucess.png';
 
 import fire from '../../services/fire';
 import Input from '../../components/Input';
@@ -20,6 +17,7 @@ import Title from '../../components/Title';
 import BigButton from '../../components/BigButton';
 import Loading from '../../components/Loading';
 import Button from '../../components/Button';
+import Modal from '../../components/Modal';
 import {
   Container,
   TitleBox,
@@ -31,12 +29,6 @@ import {
   Label,
   Box,
   ButtonBox,
-  ModalContent,
-  ModalHeader,
-  ModalImage,
-  ModalText,
-  ModalTitle,
-  ModalFooter,
 } from './styles';
 
 const Settings = ({ navigation }) => {
@@ -46,6 +38,8 @@ const Settings = ({ navigation }) => {
   const { userName, setUserName, setAccessToken } = useStore();
   const [newUserName, setNewUserName] = useState(userName);
   const [nameError, setNameError] = useState(false);
+  const [sucessSend, setSucessSend] = useState();
+  const [errorSend, setErrorSend] = useState();
 
   const modalControl = useRef(null);
   const modalControlReset = useRef(null);
@@ -98,11 +92,15 @@ const Settings = ({ navigation }) => {
       .sendPasswordResetEmail(userEmail)
       .then(() => {
         setIsLoading(false);
+        setSucessSend(
+          'Acabamos de te enviar um link via e-mail para a redefinição de senha. Caso não esteja em sua caixa de entrada procure em lixo eletrônico. 🔐😇',
+        );
         modalControlReset.current?.open();
       })
       .catch(() => {
         setIsLoading(false);
-        alert(message.FIREBASE_AUTH_INVALID_ACCOUNT);
+        setErrorSend('Houve um erro inesperado, vamos logar de novo?');
+        signOut();
       });
   };
 
@@ -114,6 +112,9 @@ const Settings = ({ navigation }) => {
     } else {
       await AsyncStorage.setItem('userName', newUserName);
       setUserName(newUserName);
+      setSucessSend(
+        ` Ôpa ${newUserName}, seu nome foi atualizado com sucesso.😄`,
+      );
       modalControl.current?.open();
     }
   };
@@ -201,58 +202,20 @@ const Settings = ({ navigation }) => {
         </>
       )}
 
-      <Modalize
-        ref={modalControlReset}
-        modalHeight={360}
-        HeaderComponent={
-          <ModalHeader>
-            <ModalImage source={Sucess} />
-            <ModalTitle>SUCESSO</ModalTitle>
-          </ModalHeader>
-        }
-        FooterComponent={
-          <ModalFooter>
-            <Button
-              handle={() => modalControlReset.current?.close()}
-              icon={Back}
-            >
-              Fechar
-            </Button>
-          </ModalFooter>
-        }
-      >
-        <ModalContent>
-          <ModalText>
-            Acabamos de te enviar um link via e-mail para a redefinição de
-            senha. Caso não esteja em sua caixa de entrada procure em lixo
-            eletrônico. 🔐😇
-          </ModalText>
-        </ModalContent>
-      </Modalize>
+      <Modal
+        control={modalControlReset}
+        buttonMessage="Fechar"
+        error={errorSend}
+        sucessMessage={sucessSend}
+        handle={() => modalControlReset.current?.close()}
+      />
 
-      <Modalize
-        ref={modalControl}
-        modalHeight={360}
-        HeaderComponent={
-          <ModalHeader>
-            <ModalImage source={Sucess} />
-            <ModalTitle>SUCESSO</ModalTitle>
-          </ModalHeader>
-        }
-        FooterComponent={
-          <ModalFooter>
-            <Button handle={() => modalControl.current?.close()} icon={Back}>
-              Fechar
-            </Button>
-          </ModalFooter>
-        }
-      >
-        <ModalContent>
-          <ModalText>
-            Ôpa {newUserName}, seu nome foi atualizado com sucesso.😄
-          </ModalText>
-        </ModalContent>
-      </Modalize>
+      <Modal
+        control={modalControl}
+        buttonMessage="Fechar"
+        sucessMessage={sucessSend}
+        handle={() => modalControl.current?.close()}
+      />
     </Container>
   );
 };

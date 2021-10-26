@@ -35,6 +35,7 @@ const CategoryList = ({ route, navigation }) => {
     const result = array.filter((item) =>
       item.name.toLowerCase().includes(inputText),
     );
+
     return result;
   };
 
@@ -76,7 +77,9 @@ const CategoryList = ({ route, navigation }) => {
           }}
           data={
             inputText.length === 0
-              ? currentCategory.sort((a, b) => a.distance >= b.distance)
+              ? currentCategory.sort(
+                  (a, b) => Number(a.distance) >= Number(b.distance),
+                )
               : filterPlaces(currentCategory)
           }
           keyExtractor={(item) => item.name}

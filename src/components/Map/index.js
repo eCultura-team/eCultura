@@ -49,6 +49,7 @@ const Map = ({ navigation, modalControls }) => {
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
+  const [allPlaces, setAllPlaces] = useState([]);
   const { museumResults, setMuseumResults } = useStore();
   const { theatreResults, setTheatreResults } = useStore();
   const { marketResults, setMarketResults } = useStore();
@@ -132,55 +133,34 @@ const Map = ({ navigation, modalControls }) => {
     setIsLoading(false);
   };
 
+  const getDistances = (locations) => {
+    const allDistances = [
+      ...locations?.map((item) => {
+        const distance = calcCrow(
+          userLocation.latitude,
+          userLocation.longitude,
+          item.lat,
+          item.long,
+        ).toFixed(1);
+
+        return {
+          ...item,
+          distance,
+        };
+      }),
+    ];
+
+    setMuseumResults([...allDistances.filter((item) => item.type === 1)]);
+    setTheatreResults([...allDistances.filter((item) => item.type === 2)]);
+    setMarketResults([...allDistances.filter((item) => item.type === 3)]);
+  };
+
   const getAllLocations = () => {
     api
       .get('/getLocations')
       .then(({ data: { locations } }) => {
-        setMuseumResults(
-          [...locations.filter((item) => item.type === 1)].map((item) => {
-            const distance = calcCrow(
-              userLocation.latitude,
-              userLocation.longitude,
-              item.lat,
-              item.long,
-            ).toFixed(1);
-
-            return {
-              ...item,
-              distance,
-            };
-          }),
-        );
-        setTheatreResults(
-          [...locations.filter((item) => item.type === 2)].map((item) => {
-            const distance = calcCrow(
-              userLocation.latitude,
-              userLocation.longitude,
-              item.lat,
-              item.long,
-            ).toFixed(1);
-
-            return {
-              ...item,
-              distance,
-            };
-          }),
-        );
-        setMarketResults(
-          [...locations.filter((item) => item.type === 3)].map((item) => {
-            const distance = calcCrow(
-              userLocation.latitude,
-              userLocation.longitude,
-              item.lat,
-              item.long,
-            ).toFixed(1);
-
-            return {
-              ...item,
-              distance,
-            };
-          }),
-        );
+        setAllPlaces(locations);
+        getDistances(locations);
       })
       .catch(() => {
         modalControls.setErrorSend(
@@ -227,7 +207,7 @@ const Map = ({ navigation, modalControls }) => {
   }, []);
 
   useEffect(() => {
-    getPlaces();
+    getDistances(allPlaces);
   }, [userLocation]);
 
   return (

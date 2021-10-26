@@ -1,14 +1,6 @@
 import styled from 'styled-components/native';
 import { colors, fontSizes, fontFamilies } from '../../tokens';
 
-export const LoadingImage = styled.View`
-  display: flex;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const WithoutImage = styled.View`
   display: flex;
   width: 353px;

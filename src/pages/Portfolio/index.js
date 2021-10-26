@@ -8,14 +8,14 @@ import {
   View,
   Linking,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import WebView from 'react-native-webview';
 import { Popup } from 'react-native-map-link';
 import LottieView from 'lottie-react-native';
 import { Modalize } from 'react-native-modalize';
-import loading from '../../assets/loading.gif';
 import global from '../../assets/global.png';
 import phone from '../../assets/phone.png';
-import navigation from '../../assets/navigation.png';
+import navigationImage from '../../assets/navigation.png';
 import Close from '../../assets/close.png';
 import * as S from './style';
 import Button from '../../components/Button';
@@ -23,6 +23,10 @@ import { useStore } from '../../providers/store';
 import { colors, fontSizes } from '../../tokens';
 
 import api from '../../services/api';
+import fire from '../../services/fire';
+
+import Modal from '../../components/Modal';
+import Loading from '../../components/Loading';
 
 const Portfolio = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,12 +36,46 @@ const Portfolio = ({ route }) => {
   const [userId, setUserId] = useState('');
   const { height: initialHeight } = Dimensions.get('window');
   const [height, setHeight] = useState(initialHeight);
-  const { userName } = useStore();
+  const [errorSend, setErrorSend] = useState(false);
   const { data } = route.params;
 
+  const { setAccessToken, setUserName, userName } = useStore();
+
   const modalControl = useRef(null);
+  const modalControlFavorite = useRef(null);
   const animation = useRef(null);
   const isFirstRun = useRef(true);
+
+  const navigation = useNavigation();
+
+  const signOut = () => {
+    setIsLoading(true);
+
+    fire
+      .auth()
+      .signOut()
+      .then(async () => {
+        await AsyncStorage.removeItem('userName');
+        await AsyncStorage.removeItem('token');
+
+        setAccessToken(null);
+        setUserName(null);
+        navigation.navigate('Login');
+      })
+      .catch((e) => console.log(e))
+      .finally(() => setIsLoading(false));
+  };
+
+  const getFavorites = (uid) => {
+    api
+      .post('/getUserFavorites', { uid })
+      .then((result) => {
+        setIsFavorited(
+          result?.data?.favorites[0]?.idLocation?.includes(data?.idLocation),
+        );
+      })
+      .catch((e) => console.log(e));
+  };
 
   const isLogged = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -47,20 +85,65 @@ const Portfolio = ({ route }) => {
     } else {
       api
         .get('/getUserData')
-        .then(({ data: { uid } }) => setUserId(uid))
+        .then(({ data: { uid } }) => {
+          setUserId(uid);
+          getFavorites(uid);
+        })
         .catch((e) => console.log(e));
       setLogged(true);
     }
   };
 
-  const handleFavorite = () => {
+  const addFavorite = () => {
     if (!logged) {
-      alert(
+      setErrorSend(
         'Apenas usuários cadastrados podem favoritar lugares, cadastre-se ou faça login no app.',
       );
+      modalControlFavorite.current?.open();
     } else {
-      setIsFavorited(!isFavorited);
+      api
+        .post('/addUserFavorites', {
+          uid: userId,
+          idLocation: data?.idLocation,
+        })
+        .then((result) => {
+          setIsFavorited(true);
+          console.log(result.data);
+
+          if (result.data.status === 201) {
+            setIsFavorited(true);
+          } else {
+            signOut();
+          }
+        })
+        .catch(() => {
+          setErrorSend(
+            'Houve um erro no servidor, por favor tente mais tarde. 🙁',
+          );
+          modalControlFavorite.current?.open();
+        });
     }
+  };
+
+  const removeFavorite = () => {
+    api
+      .post('/removeUserFavorites', {
+        uid: userId,
+        idLocation: data?.idLocation,
+      })
+      .then((result) => {
+        if (result.data.status === 201) {
+          setIsFavorited(false);
+        } else {
+          signOut();
+        }
+      })
+      .catch(() => {
+        setErrorSend(
+          'Houve um erro no servidor, por favor tente mais tarde. 🙁',
+        );
+        modalControlFavorite.current?.open();
+      });
   };
 
   const handleLayout = ({ layout }) => {
@@ -78,7 +161,7 @@ const Portfolio = ({ route }) => {
         if (isFavorited) {
           animation.current.play(120, 190);
         } else {
-          animation.current.play(1, 84);
+          animation.current.play(84, 84);
         }
         isFirstRun.current = false;
       } else if (isFavorited) {
@@ -92,9 +175,7 @@ const Portfolio = ({ route }) => {
   return (
     <>
       {isLoading ? (
-        <S.LoadingImage>
-          <Image source={loading} />
-        </S.LoadingImage>
+        <Loading />
       ) : (
         <>
           <ScrollView>
@@ -106,7 +187,7 @@ const Portfolio = ({ route }) => {
                     style={{ width: 353, height: 207, borderRadius: 8 }}
                   />
                   <S.Favorite
-                    onPress={handleFavorite}
+                    onPress={isFavorited ? removeFavorite : addFavorite}
                     underlayColor={colors.transparent}
                   >
                     <LottieView
@@ -142,12 +223,13 @@ const Portfolio = ({ route }) => {
                     Acesse o site da instituição
                   </Button>
                 )}
-                <Button icon={navigation} handle={() => setIsModal(true)}>
+                <Button icon={navigationImage} handle={() => setIsModal(true)}>
                   Navegar
                 </Button>
               </S.PortifolioContact>
             </S.PortifolioContent>
           </ScrollView>
+
           <Popup
             isVisible={isModal}
             onCancelPressed={() => setIsModal(false)}
@@ -198,6 +280,13 @@ const Portfolio = ({ route }) => {
               dialogMessage: 'Qual aplicativo gostaria de usar?',
               cancelText: 'Cancelar',
             }}
+          />
+
+          <Modal
+            control={modalControlFavorite}
+            error={errorSend}
+            buttonMessage="Fechar"
+            handle={() => modalControlFavorite.current?.close()}
           />
 
           <Modalize

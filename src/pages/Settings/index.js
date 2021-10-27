@@ -35,7 +35,7 @@ const Settings = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logged, setLogged] = useState();
   const [userEmail, setUserEmail] = useState();
-  const { userName, setUserName, setAccessToken } = useStore();
+  const { userName, setUserName, setAccessToken, setUserData } = useStore();
   const [newUserName, setNewUserName] = useState(userName);
   const [nameError, setNameError] = useState(false);
   const [sucessSend, setSucessSend] = useState();
@@ -56,6 +56,7 @@ const Settings = ({ navigation }) => {
 
         setAccessToken(null);
         setUserName(null);
+        setUserData({ uid: '', email: '' });
         navigation.navigate('Login');
       })
       .catch((e) => console.log(e))
@@ -189,7 +190,7 @@ const Settings = ({ navigation }) => {
                     <Label>E-mail</Label>
                     <Input
                       name="userName"
-                      placeholder="Nome do usuário"
+                      placeholder="Email"
                       value={userEmail}
                       icon={Blocked}
                       disabled

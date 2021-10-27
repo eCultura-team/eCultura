@@ -5,7 +5,6 @@ const storeContext = createContext();
 const Store = ({ children }) => {
   const [userName, setUserName] = useState('');
   const [accessToken, setAccessToken] = useState('');
-  const [userData, setUserData] = useState({ uid: '', email: '' });
   const [museumResults, setMuseumResults] = useState([]);
   const [theatreResults, setTheatreResults] = useState([]);
   const [marketResults, setMarketResults] = useState([]);
@@ -27,8 +26,6 @@ const Store = ({ children }) => {
           setMarketResults,
           userLocation,
           setUserLocation,
-          userData,
-          setUserData,
         }}
       >
         {children}

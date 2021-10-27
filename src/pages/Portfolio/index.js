@@ -31,24 +31,20 @@ import Loading from '../../components/Loading';
 const Portfolio = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModal, setIsModal] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(null);
+  const [isFavorited, setIsFavorited] = useState(false);
   const [logged, setLogged] = useState();
+  const [userId, setUserId] = useState('');
   const { height: initialHeight } = Dimensions.get('window');
   const [height, setHeight] = useState(initialHeight);
   const [errorSend, setErrorSend] = useState(false);
   const { data } = route.params;
 
-  const {
-    setAccessToken,
-    setUserName,
-    userName,
-    userData,
-    setUserData,
-  } = useStore();
+  const { setAccessToken, setUserName, userName } = useStore();
 
   const modalControl = useRef(null);
   const modalControlFavorite = useRef(null);
   const animation = useRef(null);
+  const isFirstRun = useRef(true);
 
   const navigation = useNavigation();
 
@@ -64,7 +60,6 @@ const Portfolio = ({ route }) => {
 
         setAccessToken(null);
         setUserName(null);
-        setUserData({ uid: '', email: '' });
         navigation.navigate('Login');
       })
       .catch((e) => console.log(e))
@@ -75,7 +70,9 @@ const Portfolio = ({ route }) => {
     api
       .post('/getUserFavorites', { uid })
       .then((result) => {
-        setIsFavorited(result?.data?.idLocation?.includes(data?.idLocation));
+        setIsFavorited(
+          result?.data?.favorites[0]?.idLocation?.includes(data?.idLocation),
+        );
       })
       .catch((e) => console.log(e));
   };
@@ -86,6 +83,13 @@ const Portfolio = ({ route }) => {
     if (token === null) {
       setLogged(false);
     } else {
+      api
+        .get('/getUserData')
+        .then(({ data: { uid } }) => {
+          setUserId(uid);
+          getFavorites(uid);
+        })
+        .catch((e) => console.log(e));
       setLogged(true);
     }
   };
@@ -98,12 +102,13 @@ const Portfolio = ({ route }) => {
       modalControlFavorite.current?.open();
     } else {
       api
-        .post('/addUserFavorite', {
-          uid: userData.uid,
+        .post('/addUserFavorites', {
+          uid: userId,
           idLocation: data?.idLocation,
         })
         .then((result) => {
           setIsFavorited(true);
+          console.log(result.data);
 
           if (result.data.status === 201) {
             setIsFavorited(true);
@@ -122,8 +127,8 @@ const Portfolio = ({ route }) => {
 
   const removeFavorite = () => {
     api
-      .post('/removeUserFavorite', {
-        uid: userData.uid,
+      .post('/removeUserFavorites', {
+        uid: userId,
         idLocation: data?.idLocation,
       })
       .then((result) => {
@@ -147,25 +152,25 @@ const Portfolio = ({ route }) => {
 
   useEffect(() => {
     isLogged();
-    getFavorites(userData.uid);
     setIsLoading(false);
   }, []);
 
   useEffect(() => {
     if (animation.current) {
-      animation.current.play(1, 70);
-    }
-  }, [animation.current]);
-
-  useEffect(() => {
-    if (animation.current) {
-      if (isFavorited) {
-        animation.current.play(85, 190);
+      if (isFirstRun.current) {
+        if (isFavorited) {
+          animation.current.play(120, 190);
+        } else {
+          animation.current.play(84, 84);
+        }
+        isFirstRun.current = false;
+      } else if (isFavorited) {
+        animation.current.play(1, 190);
       } else {
-        animation.current.play(70, 84);
+        animation.current.play(120, 84);
       }
     }
-  }, [isFavorited]);
+  }, [animation.current, isFavorited]);
 
   return (
     <>

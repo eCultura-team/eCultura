@@ -44,7 +44,6 @@ const Portfolio = ({ route }) => {
   const modalControl = useRef(null);
   const modalControlFavorite = useRef(null);
   const animation = useRef(null);
-  const isFirstRun = useRef(true);
 
   const navigation = useNavigation();
 
@@ -70,9 +69,7 @@ const Portfolio = ({ route }) => {
     api
       .post('/getUserFavorites', { uid })
       .then((result) => {
-        setIsFavorited(
-          result?.data?.favorites[0]?.idLocation?.includes(data?.idLocation),
-        );
+        setIsFavorited(result?.data?.idLocation?.includes(data?.idLocation));
       })
       .catch((e) => console.log(e));
   };
@@ -102,13 +99,12 @@ const Portfolio = ({ route }) => {
       modalControlFavorite.current?.open();
     } else {
       api
-        .post('/addUserFavorites', {
+        .post('/addUserFavorite', {
           uid: userId,
           idLocation: data?.idLocation,
         })
         .then((result) => {
           setIsFavorited(true);
-          console.log(result.data);
 
           if (result.data.status === 201) {
             setIsFavorited(true);
@@ -127,7 +123,7 @@ const Portfolio = ({ route }) => {
 
   const removeFavorite = () => {
     api
-      .post('/removeUserFavorites', {
+      .post('/removeUserFavorite', {
         uid: userId,
         idLocation: data?.idLocation,
       })
@@ -157,20 +153,19 @@ const Portfolio = ({ route }) => {
 
   useEffect(() => {
     if (animation.current) {
-      if (isFirstRun.current) {
-        if (isFavorited) {
-          animation.current.play(120, 190);
-        } else {
-          animation.current.play(84, 84);
-        }
-        isFirstRun.current = false;
-      } else if (isFavorited) {
-        animation.current.play(1, 190);
+      if (isFavorited) {
+        animation.current.play(85, 190);
       } else {
-        animation.current.play(120, 84);
+        animation.current.play(70, 84);
       }
     }
-  }, [animation.current, isFavorited]);
+  }, [isFavorited]);
+
+  useEffect(() => {
+    if (animation.current) {
+      animation.current.play(1, 84);
+    }
+  }, [animation?.current]);
 
   return (
     <>

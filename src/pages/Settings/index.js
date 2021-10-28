@@ -35,6 +35,7 @@ const Settings = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logged, setLogged] = useState();
   const [userEmail, setUserEmail] = useState();
+  const [userID, setUserID] = useState();
   const { userName, setUserName, setAccessToken } = useStore();
   const [newUserName, setNewUserName] = useState(userName);
   const [nameError, setNameError] = useState(false);
@@ -76,6 +77,7 @@ const Settings = ({ navigation }) => {
             signOut();
           } else {
             setUserEmail(data.email);
+            setUserID(data.uid);
           }
         })
         .catch((e) => console.log(e));
@@ -144,7 +146,7 @@ const Settings = ({ navigation }) => {
                 image={Favorites}
                 text="Favoritos"
                 disabled={!logged}
-                handle={() => console.log('meus favoritos')}
+                handle={() => navigation.navigate('Favorites', { userID })}
               />
               <BigButton
                 image={Logout}

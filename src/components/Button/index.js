@@ -2,9 +2,9 @@ import { Linking, Image, TouchableHighlight } from 'react-native';
 import React from 'react';
 import * as S from './style';
 
-const Button = ({ children, url, handle, icon, disabled }) => (
+const Button = ({ children, url, handle, icon, disabled, fullWidth }) => (
   <>
-    <S.ButtonContainer>
+    <S.ButtonContainer fullWidth={fullWidth}>
       <TouchableHighlight
         underlayColor="transparent"
         onPress={url ? () => Linking.openURL(url) : handle}

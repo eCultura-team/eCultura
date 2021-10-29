@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 import { colors, fontSizes, fontFamilies } from '../../tokens';
 
 export const ButtonContainer = styled.View`
-  width: 312px;
+  width: ${(props) => props.fullWidth ? '100%' : '312px'} ;
   height: 51px;
 `;
 

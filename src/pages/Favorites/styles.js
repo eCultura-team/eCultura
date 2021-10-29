@@ -16,7 +16,7 @@ export const SearchContent = styled.View`
 
 export const CarousselContent = styled.View`
   width: 100%;
-  height: 600px;
+  height: 550px;
   display: flex;
   align-items: center;
   justify-content: flex-start;

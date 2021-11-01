@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import Search from '../../assets/search.png';
 import { colors } from '../../tokens';
@@ -20,8 +19,6 @@ import FavoritesCard from '../../components/FavoritesCard';
 import Loading from '../../components/Loading';
 
 const Favorites = ({ route }) => {
-  const { width: initialWidth } = Dimensions.get('window');
-  const [width] = useState(initialWidth);
   const [locations, setLocations] = useState([]);
   const [filtered, setFiltered] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,14 +100,14 @@ const Favorites = ({ route }) => {
               <>
                 <Carousel
                   layout="default"
+                  layoutCardOffset={300}
                   ref={carousselRef}
                   data={filtered || locations}
-                  sliderWidth={width}
-                  itemWidth={width * 0.75}
+                  sliderWidth={400}
+                  itemWidth={300}
                   renderItem={({ item }) => <FavoritesCard item={item} />}
                   onSnapToItem={(index) => setCarousselIndex(index)}
                   autoplay={false}
-                  loop
                 />
 
                 <Pagination

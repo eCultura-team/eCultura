@@ -19,7 +19,7 @@ export const CarousselContent = styled.View`
   height: 550px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 `;
 
 export const TitleBox = styled.View`

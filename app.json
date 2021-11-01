@@ -2,6 +2,8 @@
   "expo": {
     "name": "eCultura",
     "slug": "ecultura",
+    "description": "Seu marketplace de pontos turisticos do Recife",
+    "privacy": "hidden",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/iconApp.png",

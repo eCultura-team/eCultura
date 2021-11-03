@@ -19,6 +19,9 @@ const CategoryItem = ({ navigation, data }) => {
           <S.InfoContentTitle isPressed={isPressed}>
             {data.name}
           </S.InfoContentTitle>
+          {data.distance !== 'NaN' && (
+            <S.InfoContentSubtitle>{data.distance} km</S.InfoContentSubtitle>
+          )}
           <Image source={Arrow} />
         </S.InfoContent>
       </S.ItemContent>

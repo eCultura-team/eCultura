@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { AsyncStorage, TouchableHighlight } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -22,6 +22,7 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Loading from '../../components/Loading';
+import Modal from '../../components/Modal';
 
 const Login = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +43,9 @@ const Login = ({ navigation }) => {
         .required('A confirmação de senha é obrigatória'),
     }),
   );
+  const [errorSend, setErrorSend] = useState(false);
+
+  const modalControl = useRef();
 
   const createUser = async (values) => {
     setIsLoading(true);
@@ -65,16 +69,18 @@ const Login = ({ navigation }) => {
       } else {
         switch (data.code) {
           case error.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS:
-            alert(message.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS);
+            setErrorSend(message.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS);
             break;
 
           case error.FIREBASE_AUTH_INVALID_PASSWORD:
-            alert(message.FIREBASE_AUTH_INVALID_PASSWORD);
+            setErrorSend(message.FIREBASE_AUTH_INVALID_PASSWORD);
             break;
 
           default:
             break;
         }
+
+        modalControl.current?.open();
       }
     } catch (e) {
       alert(message.FIREBASE_SERVER_ERROR);
@@ -145,6 +151,21 @@ const Login = ({ navigation }) => {
           </Formik>
         </>
       )}
+
+      <Modal
+        control={modalControl}
+        buttonMessage={
+          errorSend === message.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS
+            ? 'Voltar para login'
+            : 'Fechar'
+        }
+        error={errorSend}
+        handle={
+          errorSend === message.FIREBASE_AUTH_EMAIL_ALREADY_EXISTS
+            ? () => navigation.navigate('Login')
+            : () => modalControl.current?.close()
+        }
+      />
     </Container>
   );
 };

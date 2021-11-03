@@ -3,14 +3,7 @@ import { Image } from 'react-native';
 import Eye from '../../assets/eye.png';
 import CloseEye from '../../assets/closeEye.png';
 
-import {
-  InputText,
-  Content,
-  Box,
-  SeePassword,
-  HelpText,
-  ImageContent,
-} from './styles';
+import { InputText, Content, Box, HelpText, ImageContent } from './styles';
 import { colors } from '../../tokens';
 
 const Input = ({

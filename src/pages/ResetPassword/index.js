@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { TouchableHighlight } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -6,6 +6,8 @@ import LogoBig from '../../assets/logoBig.png';
 import Back from '../../assets/Back.png';
 
 import { message } from '../../utils/error/constants';
+
+import fire from '../../services/fire';
 
 import {
   Container,
@@ -20,10 +22,13 @@ import {
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import Loading from '../../components/Loading';
-import fire from '../../services/fire';
+import Modal from '../../components/Modal';
 
 const ResetPassword = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const modalControl = useRef(null);
+  const [errorSend, setErrorSend] = useState(false);
+  const [sucessSend, setSucessSend] = useState(false);
   const [initialInfo] = useState({
     email: '',
   });
@@ -41,16 +46,21 @@ const ResetPassword = ({ navigation }) => {
       .sendPasswordResetEmail(email)
       .then(() => {
         setIsLoading(false);
-        alert(
-          'Foi enviado para seu e-mail um link para a redefinição de senha. Após redefini-la, entre novamente.',
+        setSucessSend(
+          'Acabamos de te enviar um link via e-mail para a redefinição de senha. Caso não esteja em sua caixa de entrada procure em lixo eletrônico. 🔐😇',
         );
-        navigation.navigate('Login');
+        modalControl.current?.open();
       })
       .catch(() => {
         setIsLoading(false);
-        alert(message.FIREBASE_AUTH_INVALID_ACCOUNT);
-        navigation.navigate('Login');
+        setErrorSend(message.FIREBASE_AUTH_INVALID_ACCOUNT);
+        modalControl.current?.open();
       });
+  };
+
+  const handleComeback = () => {
+    modalControl.current?.close();
+    navigation.navigate('Login');
   };
 
   return (
@@ -64,7 +74,7 @@ const ResetPassword = ({ navigation }) => {
           </LogoContent>
 
           <Option>
-            <SeparatorText>Lembrou da senha? </SeparatorText>
+            <SeparatorText>Lembrou da senha?</SeparatorText>
             <TouchableHighlight
               onPress={() => navigation.navigate('Login')}
               underlayColor="transparent"
@@ -96,6 +106,14 @@ const ResetPassword = ({ navigation }) => {
           </Formik>
         </>
       )}
+
+      <Modal
+        control={modalControl}
+        error={errorSend}
+        buttonMessage="Voltar para login"
+        sucessMessage={sucessSend}
+        handle={handleComeback}
+      />
     </Container>
   );
 };

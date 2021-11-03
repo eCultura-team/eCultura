@@ -1,14 +1,18 @@
+/* eslint-disable use-isnan */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-var */
 import React, { useState, useEffect, useRef } from 'react';
 import { Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useStore } from '../../providers/store';
-import { MapContainer, MapContent, ButtonMyLocation, Indicator } from './style';
-
 import loading from '../../assets/loading.gif';
 import currentlocation from '../../assets/currentlocation.png';
+
 import api from '../../services/api';
 import { colors } from '../../tokens';
+
+import { MapContainer, MapContent, ButtonMyLocation, Indicator } from './style';
 
 const mapStyle = {
   map: {
@@ -35,7 +39,7 @@ const mapStyle = {
   ],
 };
 
-const Map = ({ navigation }) => {
+const Map = ({ navigation, modalControls }) => {
   const [isLoading, setIsLoading] = useState(true);
   const initialLocation = {
     latitude: -8.0585076,
@@ -45,10 +49,31 @@ const Map = ({ navigation }) => {
     latitude: -8.0548874,
     longitude: -34.8885838,
   });
+  const [allPlaces, setAllPlaces] = useState([]);
   const { museumResults, setMuseumResults } = useStore();
   const { theatreResults, setTheatreResults } = useStore();
   const { marketResults, setMarketResults } = useStore();
   const mapRef = useRef(null);
+
+  function toRad(Value) {
+    return (Value * Math.PI) / 180;
+  }
+
+  function calcCrow(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    var lat1 = toRad(lat1);
+    var lat2 = toRad(lat2);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+
+    return d;
+  }
 
   const mapMarkers = () => {
     const places = [...theatreResults.concat(marketResults, museumResults)];
@@ -89,35 +114,60 @@ const Map = ({ navigation }) => {
   const getPermission = () => {
     Location.requestForegroundPermissionsAsync()
       .then((data) => {
-        if (data.status !== 'granted')
-          return alert(
+        if (data.status !== 'granted') {
+          modalControls.setErrorSend(
             'A permissão de localização foi negada, por favor a permita.',
           );
+          return modalControls.control.current?.open();
+        }
 
         getLocation();
       })
-      .catch(() =>
-        alert(
-          'Houve um erro inesperado ao tentar pedir permissão de localização, por favor tente novamente depois :D',
-        ),
-      );
+      .catch(() => {
+        modalControls.setErrorSend(
+          'Houve um erro inesperado ao tentar pedir permissão de localização, por favor tente novamente depois.',
+        );
+        modalControls.control.current?.open();
+      });
 
     setIsLoading(false);
+  };
+
+  const getDistances = (locations) => {
+    const allDistances = [
+      ...locations?.map((item) => {
+        const distance = calcCrow(
+          userLocation.latitude,
+          userLocation.longitude,
+          item.lat,
+          item.long,
+        ).toFixed(1);
+
+        return {
+          ...item,
+          distance,
+        };
+      }),
+    ];
+
+    setMuseumResults([...allDistances.filter((item) => item.type === 1)]);
+    setTheatreResults([...allDistances.filter((item) => item.type === 2)]);
+    setMarketResults([...allDistances.filter((item) => item.type === 3)]);
   };
 
   const getAllLocations = () => {
     api
       .get('/getLocations')
       .then(({ data: { locations } }) => {
-        setMuseumResults([...locations.filter((item) => item.type === 1)]);
-        setTheatreResults([...locations.filter((item) => item.type === 2)]);
-        setMarketResults([...locations.filter((item) => item.type === 3)]);
+        setAllPlaces(locations);
+        getDistances(locations);
       })
-      .catch(() =>
-        alert(
+      .catch(() => {
+        modalControls.setErrorSend(
           'Erro ao tentar conectar-se ao servidor, tente novamente mais tarde. 😤',
-        ),
-      );
+        );
+        modalControls.control.current?.open();
+      });
   };
 
   const getPlaces = () => {
@@ -155,6 +205,10 @@ const Map = ({ navigation }) => {
       getLocation();
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    getDistances(allPlaces);
+  }, [userLocation]);
 
   return (
     <>

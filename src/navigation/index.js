@@ -16,6 +16,7 @@ import Login from '../pages/Login';
 import RegisterContent from '../pages/Register';
 import Settings from '../pages/Settings';
 import ResetPassword from '../pages/ResetPassword';
+import Favorites from '../pages/Favorites';
 
 const Stack = createStackNavigator();
 
@@ -104,6 +105,13 @@ const Navigation = () => {
             <Stack.Screen
               name="Settings"
               component={Settings}
+              options={{
+                title: '',
+              }}
+            />
+            <Stack.Screen
+              name="Favorites"
+              component={Favorites}
               options={{
                 title: '',
               }}

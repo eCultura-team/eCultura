@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { AsyncStorage } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { AsyncStorage, Keyboard } from 'react-native';
 import Logout from '../../assets/logout.png';
 import Favorites from '../../assets/favorites.png';
 import Password from '../../assets/password.png';
@@ -9,7 +9,7 @@ import Checked from '../../assets/checked.png';
 
 import fire from '../../services/fire';
 import Input from '../../components/Input';
-import { message } from '../../utils/error/constants';
+import { message, error } from '../../utils/error/constants';
 import { useStore } from '../../providers/store';
 import api from '../../services/api';
 
@@ -17,6 +17,7 @@ import Title from '../../components/Title';
 import BigButton from '../../components/BigButton';
 import Loading from '../../components/Loading';
 import Button from '../../components/Button';
+import Modal from '../../components/Modal';
 import {
   Container,
   TitleBox,
@@ -34,9 +35,15 @@ const Settings = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [logged, setLogged] = useState();
   const [userEmail, setUserEmail] = useState();
+  const [userID, setUserID] = useState();
   const { userName, setUserName, setAccessToken } = useStore();
   const [newUserName, setNewUserName] = useState(userName);
   const [nameError, setNameError] = useState(false);
+  const [sucessSend, setSucessSend] = useState();
+  const [errorSend, setErrorSend] = useState();
+
+  const modalControl = useRef(null);
+  const modalControlReset = useRef(null);
 
   const signOut = () => {
     setIsLoading(true);
@@ -52,7 +59,7 @@ const Settings = ({ navigation }) => {
         setUserName(null);
         navigation.navigate('Login');
       })
-      .catch((error) => console.log(error))
+      .catch((e) => console.log(e))
       .finally(() => setIsLoading(false));
   };
 
@@ -64,7 +71,15 @@ const Settings = ({ navigation }) => {
     } else {
       api
         .get('/getUserData')
-        .then(({ data: { email } }) => setUserEmail(email))
+        .then(({ data }) => {
+          if (data.code === error.FIREBASE_AUTH_ID_TOKEN_EXPIRED) {
+            alert(message.FIREBASE_AUTH_ID_TOKEN_EXPIRED);
+            signOut();
+          } else {
+            setUserEmail(data.email);
+            setUserID(data.uid);
+          }
+        })
         .catch((e) => console.log(e));
 
       setLogged(true);
@@ -79,23 +94,30 @@ const Settings = ({ navigation }) => {
       .sendPasswordResetEmail(userEmail)
       .then(() => {
         setIsLoading(false);
-        alert(
-          'Foi enviado para seu e-mail um link para a redefinição de senha. Após redefini-la, entre novamente.',
+        setSucessSend(
+          'Acabamos de te enviar um link via e-mail para a redefinição de senha. Caso não esteja em sua caixa de entrada procure em lixo eletrônico. 🔐😇',
         );
+        modalControlReset.current?.open();
       })
       .catch(() => {
         setIsLoading(false);
-        alert(message.FIREBASE_AUTH_INVALID_ACCOUNT);
+        setErrorSend('Houve um erro inesperado, vamos logar de novo?');
+        signOut();
       });
   };
 
   const storeName = async () => {
+    Keyboard.dismiss();
+
     if (newUserName.length === 0 || newUserName.length >= 18) {
       setNameError('O nome deve ter no mínimo 1 e no máximo 18 letras');
     } else {
       await AsyncStorage.setItem('userName', newUserName);
       setUserName(newUserName);
-      alert('Seu nome foi atualizado 😎');
+      setSucessSend(
+        ` Ôpa ${newUserName}, seu nome foi atualizado com sucesso.😄`,
+      );
+      modalControl.current?.open();
     }
   };
 
@@ -124,7 +146,7 @@ const Settings = ({ navigation }) => {
                 image={Favorites}
                 text="Favoritos"
                 disabled={!logged}
-                handle={() => console.log('meus favoritos')}
+                handle={() => navigation.navigate('Favorites', { userID })}
               />
               <BigButton
                 image={Logout}
@@ -181,6 +203,21 @@ const Settings = ({ navigation }) => {
           </Content>
         </>
       )}
+
+      <Modal
+        control={modalControlReset}
+        buttonMessage="Fechar"
+        error={errorSend}
+        sucessMessage={sucessSend}
+        handle={() => modalControlReset.current?.close()}
+      />
+
+      <Modal
+        control={modalControl}
+        buttonMessage="Fechar"
+        sucessMessage={sucessSend}
+        handle={() => modalControl.current?.close()}
+      />
     </Container>
   );
 };

@@ -18,10 +18,17 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "notification": {
+      "icon": "./src/assets/iconApp.png"
+    },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.eculturateam.ecultura",
+      "buildNumber": "1.0.0"
     },
     "android": {
+      "package": "com.eculturateam.ecultura",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

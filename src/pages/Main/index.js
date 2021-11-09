@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Constants from 'expo-constants';
 import { ScrollView, TouchableHighlight, Image } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import iconUser from '../../assets/iconUser.png';
@@ -39,11 +38,23 @@ const Main = ({ navigation }) => {
     }
 
     if (finalStatus !== 'granted') {
-      setErrorNotification('Failed to get push token for push notification!');
+      setErrorNotification('Falha ao pegar permissão para notificações.');
+      controlNotificaton.current?.open();
       return;
     }
 
     const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      enableVibrate: true,
+      lockscreenVisibility: true,
+      sound: true,
+      enableLights: true,
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
 
     return token;
   }

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { AsyncStorage, TouchableHighlight } from 'react-native';
+import { AsyncStorage, TouchableHighlight, BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import LogoBig from '../../assets/logoBig.png';
@@ -75,6 +76,21 @@ const Login = ({ navigation }) => {
       setIsLoading(false);
     }
   };
+
+  const handleBackButton = () => {
+    BackHandler.exitApp();
+
+    return true;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    }, []),
+  );
 
   return (
     <Container>

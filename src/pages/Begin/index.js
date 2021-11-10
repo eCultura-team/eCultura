@@ -1,5 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { AsyncStorage, KeyboardAvoidingView, Keyboard } from 'react-native';
+import {
+  AsyncStorage,
+  KeyboardAvoidingView,
+  Keyboard,
+  BackHandler,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useStore } from '../../providers/store';
 import logo from '../../assets/logo.png';
 import Back from '../../assets/Back.png';
@@ -32,6 +38,21 @@ const Begin = ({ navigation }) => {
       alert(error);
     }
   };
+
+  const handleBackButton = () => {
+    BackHandler.exitApp();
+
+    return true;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    }, []),
+  );
 
   return (
     <>

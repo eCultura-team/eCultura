@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ScrollView, TouchableHighlight, Image } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  ScrollView,
+  TouchableHighlight,
+  Image,
+  BackHandler,
+} from 'react-native';
 import * as Notifications from 'expo-notifications';
 import iconUser from '../../assets/iconUser.png';
 
@@ -58,6 +64,21 @@ const Main = ({ navigation }) => {
 
     return token;
   }
+
+  const handleBackButton = () => {
+    BackHandler.exitApp();
+
+    return true;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    }, []),
+  );
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) =>
